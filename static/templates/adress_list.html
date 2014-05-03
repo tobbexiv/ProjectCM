@@ -1,0 +1,11 @@
+<h1>Adressbook</h1>
+<ul>
+    {% for adress in object_list %}
+    <li>{{ server.name }}  :  
+    <a href="{% url "adress_edit" adress.id %}">{{ adress.name }}</a>
+    <a href="{% url "adress_delete" adress.id %}">delete</a>
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url "adress_new" %}">New</a>
