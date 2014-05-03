@@ -11,6 +11,6 @@ urlpatterns = patterns('',
  	url(r'^$', 'projectcm.views.home', name='home'),
     url(r'^admin/', include(admin.site.urls)),
 	url(r'^adressbook/', include('adressbook.urls')),
-	url(r'^accounts/login/$', 'django.contrib.auth.views.login', {'template_name': 'admin/login.html'}),
- 	url(r'^accounts/logout/$', 'django.contrib.auth.views.logout'), 
+	url(r'^accounts/login/$', 'django.contrib.auth.views.login'),
+ 	url(r'^accounts/logout/$', 'django.contrib.auth.views.logout', {'next_page' : 'projectcm.views.home'}), 
 )

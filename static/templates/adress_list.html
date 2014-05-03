@@ -1,4 +1,6 @@
 <h1>Adressbook</h1>
+<br>
+<a href="{% url 'projectcm.views.home' %}">Home</a>
 <ul>
     {% for adress in object_list %}
     <li>{{ server.name }}  :  
