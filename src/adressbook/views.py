@@ -7,10 +7,12 @@ from adressbook.models import Adress
 class AdressForm(ModelForm):
 	class Meta:
 		model = Adress
+		exclude = ['contact_owner']
+		
 
 @login_required
 def adress_list(request, template_name='adress_list.html'):
-	adresses = Adress.objects.all()
+	adresses = Adress.objects.filter(contact_owner=request.user)
 	data = {}
 	data['object_list'] = adresses
 
@@ -18,29 +20,32 @@ def adress_list(request, template_name='adress_list.html'):
 
 @login_required
 def adress_create(request, template_name='adress_form.html'):
-    form = AdressForm(request.POST or None)
-    if form.is_valid():
-        form.save()
-        return redirect('adress_list')
+	form = AdressForm(request.POST or None)
+	if form.is_valid():
+		adress = form.save(commit=False)
+		adress.contact_owner = request.user
+		adress.save()
 
-    return render(request, template_name, {'form':form})
+		return redirect('adress_list')
+
+	return render(request, template_name, {'form':form})
 
 @login_required
 def adress_update(request, pk, template_name='adress_form.html'):
-    adress = get_object_or_404(Adress, pk=pk)
-    form = AdressForm(request.POST or None, instance=adress)
-    if form.is_valid():
-        form.save()
-        return redirect('adress_list')
+	adress = get_object_or_404(Adress, pk=pk)
+	form = AdressForm(request.POST or None, instance=adress)
+	if form.is_valid():
+		form.save()
+		return redirect('adress_list')
 
-    return render(request, template_name, {'form':form})
+	return render(request, template_name, {'form':form})
 
 @login_required
 def adress_delete(request, pk, template_name='adress_delete.html'):
-    adress = get_object_or_404(Adress, pk=pk)    
-    if request.method=='POST':
-        adress.delete()
-        return redirect('adress_list')
+	adress = get_object_or_404(Adress, pk=pk)    
+	if request.method=='POST':
+		adress.delete()
+		return redirect('adress_list')
 
-    return render(request, template_name, {'object':adress})
+	return render(request, template_name, {'object':adress})
 
