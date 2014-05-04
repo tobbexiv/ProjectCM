@@ -15,4 +15,4 @@ class Adress(models.Model):
 	contact_owner = models.ForeignKey(User)
 
 	def __str__(self):
-		return self.name
+		return str(self.name + " (" + self.email + ")" )
