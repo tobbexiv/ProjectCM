@@ -1,0 +1,12 @@
+# used language
+language: python
+# versions to run
+python:
+  - "3.2"
+  - "3.3"
+  - "3.4"
+# command to install dependencies
+install: 
+  - pip install django
+# command to run tests
+script: nosetests
