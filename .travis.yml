@@ -2,8 +2,6 @@
 language: python
 # versions to run
 python:
-  - "3.2"
-  - "3.3"
   - "3.4"
 # command to install dependencies
 install: 
@@ -11,6 +9,7 @@ install:
   - pip install south
 # command to run tests
 before_script:
+  - cd src/
   - python src/manage.py syncdb
 
 script:
