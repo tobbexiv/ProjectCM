@@ -10,7 +10,7 @@ install:
 # command to run tests
 before_script:
   - cd src/
-  - python src/manage.py syncdb
+  - python manage.py syncdb
 
 script:
-  - python src/manage.py test
+  - python manage.py test
