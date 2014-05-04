@@ -8,5 +8,6 @@ python:
 # command to install dependencies
 install: 
   - pip install django
+  - pip install south
 # command to run tests
 script: src/manage.py test
