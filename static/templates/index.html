@@ -4,7 +4,7 @@
 	<body>
 		<h1>ProjectCM Main Page</h1>
 		<b>Hello {{ request.user.username }}</b> <a href="{% url 'django.contrib.auth.views.logout' %}">Logout</a><br><br>
-
+		<a href="{% url 'userdata.views.userdata_show' %}">Show Userdata</a> 
 		<a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a> 
 	</body>
 </html>
