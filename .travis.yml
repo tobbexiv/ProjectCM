@@ -10,4 +10,8 @@ install:
   - pip install django
   - pip install south
 # command to run tests
-script: python3  src/manage.py test
+before_script:
+  - python manage.py syncdb
+
+script:
+  - python manage.py test
