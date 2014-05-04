@@ -2,6 +2,8 @@
 language: python
 # versions to run
 python:
+  - "3.2"
+  - "3.3"
   - "3.4"
 # command to install dependencies
 install: 
