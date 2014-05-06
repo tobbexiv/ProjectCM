@@ -5,11 +5,11 @@ from django.contrib.auth.models import User
 
 class AdressTestCase(TestCase):
 	def setUp(self):
-		#set up test user
+		#set up test users
 		self.test_user_peter = User.objects.create_user('peter', 'peter@test.com', 'testpassword')
 		self.test_user_prefect = User.objects.create_user('prefect', 'prefect@test.com', 'testpassword2')
 
-		#create test adressbook entry
+		#create test adressbook entries
 		Adress.objects.create(name="Andreas", email="andreas@test.com", contact_owner=self.test_user_peter)
 		Adress.objects.create(name="Tobias", email="tobias@test.com", contact_owner=self.test_user_prefect)
 
