@@ -38,6 +38,6 @@ class TestCaseLogin(LiveServerTestCase):
 		body = self._driver.find_element_by_tag_name('h1')
 		self.assertIn('Login', body.text)
 
-#	@classmethod
-#	def tearDownClass(cls):
-#		cls._driver.quit()
+	@classmethod
+	def tearDownClass(cls):
+		cls._driver.quit()
