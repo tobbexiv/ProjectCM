@@ -12,7 +12,6 @@ install:
 
 before_script:
   - cd src/
-  - python manage.py syncdb
 
 script:
   - coverage run --source=python manage.py test
