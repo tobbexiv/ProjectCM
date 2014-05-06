@@ -19,6 +19,13 @@ def adress_list(request, template_name='adress_list.html'):
 	return render(request, template_name, data)
 
 @login_required
+def adress_view(request, pk, template_name='adress_show.html'):
+	adress = get_object_or_404(Adress, pk=pk)	
+
+	return render(request, template_name, {'adress':adress})
+
+
+@login_required
 def adress_create(request, template_name='adress_form.html'):
 	form = AdressForm(request.POST or None)
 	if form.is_valid():
@@ -26,7 +33,7 @@ def adress_create(request, template_name='adress_form.html'):
 		adress.contact_owner = request.user
 		adress.save()
 
-		return redirect('adress_list')
+		return redirect('adress_view', pk=adress.id)
 
 	return render(request, template_name, {'form':form})
 
