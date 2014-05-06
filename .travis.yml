@@ -1,18 +1,21 @@
-# used language
 language: python
-# versions to run
+
 python:
   - "3.2"
   - "3.3"
   - "3.4"
-# command to install dependencies
+
 install: 
   - pip install django
   - pip install south
-# command to run tests
+  - pip install coveralls
+
 before_script:
   - cd src/
   - python manage.py syncdb
 
 script:
-  - python manage.py test
+  - coverage run --source=python manage.py test
+
+after_success:
+  - coveralls
