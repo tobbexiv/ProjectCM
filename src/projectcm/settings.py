@@ -88,3 +88,6 @@ STATIC_URL = '/static/'
 TEMPLATE_DIRS = (
 	os.path.join(os.path.dirname(BASE_DIR), "static", "templates"),
 )
+
+# Disable south for unit test runs
+SOUTH_TESTS_MIGRATE = False
