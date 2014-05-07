@@ -117,7 +117,7 @@ class TestCaseLogin(LiveServerTestCase):
 		cls._driver = webdriver.Firefox()
 
 
-	def test_login(self):
+	def test_1_login(self):
 		self._driver.get("http://localhost:8000/")
 		self._driver.find_element_by_id('id_username').send_keys("peter")
 		self._driver.find_element_by_id('id_password').send_keys(self._password_peter)
@@ -126,22 +126,22 @@ class TestCaseLogin(LiveServerTestCase):
 		self.assertIn('ProjectCM', body.text)
 
 
-	def test_new(self):
+	def test_2_new(self):
 		self._driver.get("http://localhost:8000/adressbook/")
 		self._driver.find_element_by_id('new').click()
 		self._driver.find_element_by_id('id_name').send_keys("test")
 		self._driver.find_element_by_id('id_email').send_keys("test@email.com")
 		self._driver.find_element_by_id('save').click()
 		body = self._driver.find_element_by_tag_name('body')
-		self.assertIn('ProjectCM', body.text)
+		self.assertIn('test', body.text)
 		self.assertIn('test@email.com', body.text)
 
 
-	def test_logout(self):
+	def test_3_logout(self):
 		self._driver.get("http://localhost:8000/")
 		self._driver.find_element_by_id('logout').click()
 		body = self._driver.find_element_by_tag_name('h1')
-		self.assertIn('test', body.text)
+		self.assertIn('Login', body.text)
 
 	@classmethod
 	def tearDownClass(cls):
