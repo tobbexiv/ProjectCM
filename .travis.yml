@@ -9,7 +9,6 @@ install:
   - pip install django
   - pip install south
   - pip install coveralls
-  - pip install selenium
 
 before_script:
   - cd src/

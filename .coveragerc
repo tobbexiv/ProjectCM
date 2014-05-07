@@ -3,3 +3,4 @@
     */migrations/*
     *__init__.py
     projectcm/wsgi.py
+    *tests*.py
