@@ -3,6 +3,11 @@ Feature: manage address book
   I want to manage my address book
   So that I can write E-Mails to my contacts or other people
 
+  Scenario: login
+	Given a user
+	When I log in
+	Then I see the landing page
+  
   Scenario: create contact
     Given I am logged in 
 	And I am on the contact list
