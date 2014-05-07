@@ -1,5 +1,5 @@
 <form method="post">{% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="save" />
+    <input type="submit" value="save" id="save"/>
     <a href="{% url 'adress_list' %}">cancel</a>
 </form>

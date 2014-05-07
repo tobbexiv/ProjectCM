@@ -3,7 +3,7 @@
 {% if form.errors %}
 <p>Your username and/or password are incorrect</p>
 {% endif %}
-
+<h1>Login</h1>
 <form method="POST" action="{% url 'django.contrib.auth.views.login' %}">
 	{% csrf_token %}
 	<table>
@@ -16,7 +16,7 @@
 			<td>{{ form.password }}</td>
 		</tr>
 	</table>
-	<input type="submit" value="login" />
+	<input type="submit" value="login" id="login"/>
 	<input type="hidden" name="next" value="{{ next }}" />
 </form>
 

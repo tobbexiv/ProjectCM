@@ -39,6 +39,7 @@ INSTALLED_APPS = (
     'adressbook',
     'userdata',
     'south',
+    'behave',
 )
 
 MIDDLEWARE_CLASSES = (
