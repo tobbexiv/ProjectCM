@@ -15,7 +15,7 @@ before_script:
   - cd src/
 
 script:
-  - coverage run --rcfile=../.coveragerc --source='.' manage.py test
+  - coverage run --rcfile=../.coveragerc --source='.' manage.py test --pattern=tests_unit.py
 
 after_success:
   - coveralls
