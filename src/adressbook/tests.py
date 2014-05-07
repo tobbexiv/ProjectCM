@@ -44,6 +44,9 @@ class AdressbookViewsTestCaseWithoutLogin(TestCase):
 		resp = self.client.get('/adressbook/')
 		self.assertRedirects(resp, '/accounts/login/?next=/adressbook/', status_code=302, target_status_code=200, msg_prefix='')	
 
+	def test_show_wo_login(self):
+		resp = self.client.get('/adressbook/show/1')
+		self.assertRedirects(resp, '/accounts/login/?next=/adressbook/show/1', status_code=302, target_status_code=200, msg_prefix='')	
 
 	def test_new_wo_login(self):
 		resp = self.client.get('/adressbook/new')
@@ -83,6 +86,10 @@ class AdressbookViewsTestCaseWithLogin(TestCase):
 	def test_new_wth_login(self):
 		resp = self.client.get('/adressbook/new')
 		self.assertEqual(resp.status_code, 200) 
+
+	def test_show_wth_login(self):
+		resp = self.client.get('/adressbook/show/1')
+		self.assertEqual(resp.status_code, 200) 	
 
 
 	def test_edit_wth_login(self):
