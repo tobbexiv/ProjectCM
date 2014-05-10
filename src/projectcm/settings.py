@@ -38,6 +38,7 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'adressbook',
     'userdata',
+    'accounts',
     'south',
 )
 
@@ -96,3 +97,6 @@ SOUTH_TESTS_MIGRATE = False
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static", "templates"),
 )
+
+# User profile
+AUTH_PROFILE_MODULE = 'accounts.UserProfile'
