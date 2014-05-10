@@ -5,7 +5,10 @@
 <table>
 	<tr><td>{{ userdata.first_name }} {{ userdata.last_name }} ({{ userdata.username }})</td></tr>
 	<tr><td>{{ userdata.email }}</td></tr>
-	<tr><td><a href="{% url "userdata_edit" userdata.id %}">edit</a></td></tr>
+	<tr><td>{{ userprofile.max_inbox_size }}kb inbox size</td></tr>
+	<tr><td>{{ userprofile.max_no_mail_accounts }} mail accounts</td></tr>
+	<tr><td>{{ userprofile.max_no_calendars }} calendars</td></tr>
+	<tr><td><a href="{% url "account_edit" userdata.id %}">edit</a></td></tr>
 	<tr><td><a href="/accounts/password/change">change password</a></td></tr>
 </table>	
 
