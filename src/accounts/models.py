@@ -13,7 +13,6 @@ class UserProfile(models.Model):
 
 	
 
-
 # Post save trigger that is called after User creation to create corresponding UserProfile
 def create_user_profile(sender, instance, created, **kwargs):
 	if created:

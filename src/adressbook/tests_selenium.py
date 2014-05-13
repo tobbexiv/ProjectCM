@@ -9,7 +9,7 @@ class TestCaseLogin(LiveServerTestCase):
 	@classmethod	
 	def setUpClass(cls):
 		cls._password_peter = '123'		
-		cls._driver = webdriver.Firefox()
+		cls._driver = webdriver.PhantomJS()
 
 
 	def test_1_login(self):
