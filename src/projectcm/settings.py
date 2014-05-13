@@ -36,6 +36,7 @@ INSTALLED_APPS = (
     'django.contrib.sessions',
     'django.contrib.messages',
     'django.contrib.staticfiles',
+    'registration',
     'adressbook',
     'accounts',
     'south',
@@ -96,3 +97,7 @@ SOUTH_TESTS_MIGRATE = False
 STATICFILES_DIRS = (
     os.path.join(BASE_DIR, "static", "templates"),
 )
+
+# Timeout for registration
+ACCOUNT_ACTIVATION_DAYS = 1
+
