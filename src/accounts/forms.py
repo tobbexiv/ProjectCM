@@ -1,5 +1,5 @@
 from registration.backends.default.views import RegistrationView
-from registration.forms import RegistrationFormUniqueEmail
+from registration.forms import RegistrationForm
 
-class RegistrationViewUniqueEmail(RegistrationView):
-	form_class = RegistrationFormUniqueEmail
+class RegistrationView(RegistrationView):
+	form_class = RegistrationForm
