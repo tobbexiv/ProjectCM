@@ -14,6 +14,7 @@ install:
 
 before_script:
   - cd src/
+  - python3 manage.py runserver
 
 script:
   - coverage run --rcfile=../.coveragerc --source='.' manage.py test 
