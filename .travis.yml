@@ -9,6 +9,7 @@ install:
   - pip install django
   - pip install south
   - pip install coveralls
+  - pip install selenium
   - npm install phantomjs
 
 before_script:
