@@ -20,11 +20,6 @@ script:
 after_success:
   - coveralls
 
-branches:
-  only:
-    - master
-    - test
-
 notifications:
   email:
     recipients:
