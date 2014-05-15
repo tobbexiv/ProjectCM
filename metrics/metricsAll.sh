@@ -7,6 +7,8 @@ if [ $1 ]
 		echo "
 		Metrics
 		=======
+
+		See http://radon.readthedocs.org for more information on radon.
 		"
 		bash metricsCC.sh console
 		bash metricsMI.sh console

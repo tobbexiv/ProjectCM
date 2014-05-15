@@ -4,8 +4,8 @@ if [ $1 ]
 		Calculate static metrics
 		------------------------
 		"
-		radon raw ../. -e "*/migration/*"
+		radon raw ../. -e "*/migration/*" --show_complexity
 	else
 		mkdir result -p
-		radon raw ../. -e "*/migration/*" > result/metricsRAW.txt -s
+		radon raw ../. -e "*/migration/*" --show_complexity > result/metricsRAW.txt
 fi

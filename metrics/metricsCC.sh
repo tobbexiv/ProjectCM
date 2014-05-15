@@ -4,8 +4,8 @@ if [ $1 ]
 		Calculate ciclomatic complexity
 		-------------------------------
 		"
-		radon cc ../. -e "*/migration/*"
+		radon cc ../. -e "*/migration/*" --total-average --show_complexity
 	else
 		mkdir result -p
-		radon cc ../. -e "*/migration/*" > result/metricsCC.txt --total-average -s
+		radon cc ../. -e "*/migration/*" --total-average --show_complexity > result/metricsCC.txt
 fi
