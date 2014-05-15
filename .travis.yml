@@ -15,7 +15,7 @@ before_script:
 
 script:
   - coverage run --rcfile=../.coveragerc --source='.' manage.py test 
-
+  - bash ../metrics/metricsAll.sh console online
 
 after_success:
   - coveralls
