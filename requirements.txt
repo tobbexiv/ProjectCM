@@ -3,3 +3,4 @@ south
 coveralls
 selenium
 radon
+django-allauth
