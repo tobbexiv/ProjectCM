@@ -14,9 +14,9 @@ class TestCaseLogin(LiveServerTestCase):
 
 	def test_1_login(self):
 		self._driver.get("http://localhost:8000/")
-		self._driver.find_element_by_id('id_username').send_keys("peter")
+		self._driver.find_element_by_id('id_login').send_keys("peter")
 		self._driver.find_element_by_id('id_password').send_keys(self._password_peter)
-		self._driver.find_element_by_id('login').click()
+		self._driver.find_element_by_class_name("primaryAction").click();
 		body = self._driver.find_element_by_tag_name('h1')
 		self.assertIn('ProjectCM', body.text)
 
