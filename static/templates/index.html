@@ -1,12 +1,12 @@
-<!DOCTYPE html>
-<html>
-	<head></head>
-	<body>
-		<h1>ProjectCM Main Page</h1>
-		<b>Hello {{ request.user.username }}</b> 
-		<!-- <a href="" id="logout">Logout</a> -->
-		<br><br>
-		<a href="">Show Userdata</a> 
-		<a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a> 
-	</body>
-</html>
+{% extends "base.html" %}
+
+{% block title %} {{ title }} {% endblock %}
+
+{% block content %}
+	<b>Hello {{ request.user.username }}</b> 
+	<!-- <a href="" id="logout">Logout</a> -->
+	<br><br>
+	<a href="">Show Userdata</a> 
+	<a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a> 
+
+{% endblock %}
