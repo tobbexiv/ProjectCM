@@ -36,7 +36,7 @@ class TestCaseLogin(LiveServerTestCase):
 		self._driver.get("http://localhost:8000/")
 		self._driver.find_element_by_id('logout').click()
 		body = self._driver.find_element_by_tag_name('h1')
-		self.assertIn('Sign In', body.text)
+		self.assertIn('Sign Out', body.text)
 
 	@classmethod
 	def tearDownClass(cls):
