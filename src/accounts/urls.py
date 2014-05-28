@@ -2,9 +2,9 @@ from django.conf.urls import patterns, url
 
 
 urlpatterns = patterns('', 
-	# url(r'^$', include('registration.backends.default.urls')),
+	url(r'^$', 'accounts.views.account_show'),
 	url(r'^edit/(?P<pk>\d+)$', 'accounts.views.account_edit', name='account_edit'),
-	url(r'^login/$', 'django.contrib.auth.views.login'),
+	#url(r'^login/$', 'django.contrib.auth.views.login'),
 	# url(r'^register/$', 'accounts.forms.RegistrationView.as_view()', name='registration_register'),
 	url(r'^logout/$', 'django.contrib.auth.views.logout', {'next_page' : 'projectcm.views.home'}), 
 	url(r'^password/change/$', 'django.contrib.auth.views.password_change', name='password_change'),
