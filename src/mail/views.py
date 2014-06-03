@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
 from mail.models import MailAccount, MailHost
@@ -17,13 +17,13 @@ def mailaccount_list(request, template_name='mailaccount_list.html'):
 @login_required
 def mailaccount_view(request, pk, template_name='mailaccount_view.html'):
 	account = MailAccount.objects.get(pk=pk)
-	send_host = MailHost.objects.get(send_host_of=account.send_host)
-	# retrieve_host = MailHost.objects.get(retrieve_host_of=account.retrieve_host)	
+	send_host = MailHost.objects.get(pk=account.send_host.id)
+	retrieve_host = MailHost.objects.get(pk=account.retrieve_host.id)	
 
 	data = {}
 	data['account'] = account
 	data['send_host'] = send_host
-	# data['retrieve_host'] = retrieve_host
+	data['retrieve_host'] = retrieve_host
 
 	return render(request, template_name, data)
 
@@ -56,4 +56,16 @@ def mailaccount_create(request, template_name='mailaccount_form.html'):
 	return render(request, template_name, data)
 
 
-	
+@login_required
+def mailaccount_delete(request, pk, template_name='mailaccount_delete.html'):
+	account = get_object_or_404(MailAccount, pk=pk)
+	retrieve_host = get_object_or_404(MailHost, retrieve_host_of=account)
+	send_host = get_object_or_404(MailHost, send_host_of=account)
+
+	if request.method=='POST':
+		account.delete()
+		retrieve_host.delete()
+		send_host.delete()
+		return redirect('mailaccount_list')
+
+	return render(request, template_name, {'object':account})	
