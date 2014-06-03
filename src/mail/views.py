@@ -102,6 +102,7 @@ def mailaccount_update(request, pk, template_name='mailaccount_form.html'):
 
 	return render(request, template_name, data)
 
-	
+
 
 def message_list(request, template_name='message_list.html'):
+	pass

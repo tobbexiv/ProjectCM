@@ -1,5 +1,5 @@
 import imaplib
-
+import email
 
 class ImapHelper(object):
 
@@ -44,7 +44,25 @@ class ImapHelper(object):
 			return mailboxes
 
 
+	def select_mailbox(self, mailbox):
+		if self.server is not None:
+			self.server.select(mailbox)
+
+
+	def load_mail_from_mailbox(self):
+		mails = []
+		typ, data = self.server.uid('search', None, "ALL")
+
+		for num in data[0].split():
+			typ, data = self.server.uid('fetch', num, '(RFC822)')
+			raw_email = data[0][1]
+			mails.append(email.message_from_bytes(raw_email))
+
+		return mails	
+
 	def close_connection(self):
 		if self.server is not None:			
 			self.server.logout()
+
+
 
