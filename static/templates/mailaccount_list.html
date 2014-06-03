@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+
+{% block title %} {{ title }} {% endblock %}
+{% block content %}
+<br>
+<a href="{% url 'projectcm.views.home' %}">Home</a>
+<ul>
+    {% for account in object_list %}
+    <li>{{ account }}  :  
+    <a href="{% url "mailaccount_view" account.id %}">show</a>	
+    
+    </li>
+    {% endfor %}
+</ul>
+
+<a href="{% url "adress_new" %}" id="new">New</a>
+
+{% endblock %}
