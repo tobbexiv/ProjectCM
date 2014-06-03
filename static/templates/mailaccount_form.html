@@ -1,0 +1,10 @@
+<form method="post">{% csrf_token %}
+	<b>Account</b>
+    {{ mailaccount.as_p }}
+    <b>Send Host</b>
+    {{ send_host.as_p }}
+    <b>Retrieve Host</b>
+    {{ retrieve_host.as_p }}
+    <input type="submit" value="save" id="save"/>
+    <a href="{% url 'mailaccount_list' %}">cancel</a>
+</form>
