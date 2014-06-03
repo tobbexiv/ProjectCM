@@ -69,3 +69,35 @@ def mailaccount_delete(request, pk, template_name='mailaccount_delete.html'):
 		return redirect('mailaccount_list')
 
 	return render(request, template_name, {'object':account})	
+
+
+@login_required
+def mailaccount_update(request, pk, template_name='mailaccount_form.html'):
+	account = get_object_or_404(MailAccount, pk=pk)
+	retrieve_host = get_object_or_404(MailHost, retrieve_host_of=account)
+	send_host = get_object_or_404(MailHost, send_host_of=account)
+
+	mailaccount_form = MailAccountForm(request.POST or None, instance=account)
+	mailhost_send_form = MailHostForm(request.POST or None, prefix='send', instance=send_host)
+	mailhost_retrieve_form = MailHostForm(request.POST or None, prefix='retrieve', instance=retrieve_host)
+
+	if mailaccount_form.is_valid() and mailhost_send_form.is_valid() and mailhost_retrieve_form.is_valid():
+
+		send_host = mailhost_send_form.save()
+		retrieve_host = mailhost_retrieve_form.save()
+
+		account = mailaccount_form.save(commit=False)
+		account.mail_account_owner = request.user
+		account.retrieve_host = retrieve_host
+		account.send_host = send_host		
+		account.save()		
+
+
+		return redirect('mailaccount_view', pk=account.id)
+
+	data = {}
+	data['mailaccount'] = mailaccount_form
+	data['send_host'] = mailhost_send_form
+	data['retrieve_host'] = mailhost_retrieve_form
+
+	return render(request, template_name, data)

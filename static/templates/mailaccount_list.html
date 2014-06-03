@@ -8,6 +8,7 @@
     {% for account in object_list %}
     <li>{{ account }}  :  
     <a href="{% url "mailaccount_view" account.id %}">show</a>	
+    <a href="{% url "mailaccount_update" account.id %}">edit</a>	
     <a href="{% url "mailaccount_delete" account.id %}">delete</a>	
     </li>
     {% endfor %}
