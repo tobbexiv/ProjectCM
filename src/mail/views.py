@@ -1,7 +1,11 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 
+
+from django.http import HttpResponse
 from mail.imap_helper import ImapHelper
+from django.forms.models import model_to_dict
 
 from mail.models import MailAccount, MailHost, Message
 from mail.forms import MailAccountForm, MailHostForm
@@ -113,6 +117,16 @@ def select_mailaccount(request, template_name='select_mailaccount.html'):
 	data['object_list'] = accounts
 
 	return render(request, template_name, data)
+
+@login_required
+def mailboxes_list(request, mail_account_id):
+	mail_account = MailAccount.objects.get(mail_account_owner=request.user, pk=mail_account_id)
+	imap_helper = ImapHelper(mail_account)
+	mailboxes = imap_helper.load_mailboxes()
+
+	json_data = serializers.serialize('json', [ mail_account, ])
+
+	return HttpResponse(json_data, mimetype="application/json") 
 
 
 @login_required
