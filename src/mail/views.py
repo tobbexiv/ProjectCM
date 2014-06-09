@@ -7,7 +7,7 @@ from django.http import HttpResponse
 from mail.imap_helper import ImapHelper
 from django.forms.models import model_to_dict
 
-from mail.models import MailAccount, MailHost, Message
+from mail.models import MailAccount, MailHost, Message, MailBox
 from mail.forms import MailAccountForm, MailHostForm
 
 @login_required
@@ -120,13 +120,20 @@ def select_mailaccount(request, template_name='select_mailaccount.html'):
 
 @login_required
 def mailboxes_list(request, mail_account_id):
-	mail_account = MailAccount.objects.get(mail_account_owner=request.user, pk=mail_account_id)
+	mail_account = MailAccount.objects.get(pk=mail_account_id)
 	imap_helper = ImapHelper(mail_account)
-	mailboxes = imap_helper.load_mailboxes()
+	mailboxes_server = imap_helper.load_mailboxes()
 
-	json_data = serializers.serialize('json', [ mail_account, ])
+	for mb in mailboxes_server:
+		if not MailBox.objects.filter(name=str(mb), mail_account=mail_account):
+			m = MailBox(name=str(mb), mail_account=mail_account)
+			m.save()
+			
+	
+	mailboxes_local = MailBox.objects.filter(mail_account=mail_account)
+	json_data = serializers.serialize('json', mailboxes_local)
 
-	return HttpResponse(json_data, mimetype="application/json") 
+	return HttpResponse(json_data, content_type="application/json") 
 
 
 @login_required

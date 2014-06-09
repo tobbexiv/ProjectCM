@@ -1,5 +1,6 @@
 import imaplib
 import email
+import re
 
 class ImapHelper(object):
 
@@ -40,8 +41,15 @@ class ImapHelper(object):
 
 	def load_mailboxes(self):
 		if self.server is not None:			
-			mailboxes = self.server.list()
-			return mailboxes
+			typ, mailboxes = self.server.list()
+			mailbox_names = []			
+
+			for box in mailboxes:			
+				mailbox_name = re.split('"', str(box))
+				mailbox_names.append(mailbox_name[3])
+				
+				
+			return mailbox_names
 
 
 	def select_mailbox(self, mailbox):
