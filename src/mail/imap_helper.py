@@ -8,15 +8,15 @@ class ImapHelper(object):
 	is_secure = False
 
 	def __init__(self, account_data):
-		if account_data['is_secure'] == True:
+		if account_data.retrieve_host.host_ssl == True:
 			self.is_secure = True
-			if account_data['port'] is not None:
-				self.set_port(account_data['port'])
+			if account_data.retrieve_host.host_port is not None:
+				self.set_port(account_data.retrieve_host.host_port)
 			else:
 				self.set_port(self.SSLPORT)
 		else:
-			if account_data['port'] is not None:
-				self.set_port(account_data['port'])
+			if account_data.retrieve_host.host_port is not None:
+				self.set_port(account_data.retrieve_host.host_port)
 			else:
 				self.set_port(self.DEFPORT)	
 		
@@ -29,11 +29,11 @@ class ImapHelper(object):
 
 	def load_connection(self, account_data):	
 		if self.is_secure:			
-			server = imaplib.IMAP4_SSL(account_data['host_name'], int(self.port))
+			server = imaplib.IMAP4_SSL(account_data.retrieve_host.host_name, int(self.port))
 		else:
-			server = imaplib.IMAP4(account_data['host_name'], int(self.port))	
+			server = imaplib.IMAP4(account_data.retrieve_host.host_name, int(self.port))	
 
-		server.login(account_data['logon_name'], account_data['password'])	
+		server.login(account_data.logon_name, account_data.password)	
 
 		return server
 

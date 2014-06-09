@@ -1,6 +1,8 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 
+from mail.imap_helper import ImapHelper
+
 from mail.models import MailAccount, MailHost
 from mail.forms import MailAccountForm, MailHostForm
 
@@ -103,6 +105,26 @@ def mailaccount_update(request, pk, template_name='mailaccount_form.html'):
 	return render(request, template_name, data)
 
 
+@login_required
+def select_mailaccount(request, template_name='select_mailaccount.html'):
+	accounts = MailAccount.objects.filter(mail_account_owner=request.user)	
+	data = {}
+	data['title'] = "Select Mail Account"
+	data['object_list'] = accounts
 
-def message_list(request, template_name='message_list.html'):
-	pass
+	return render(request, template_name, data)
+
+
+@login_required
+def message_list(request, pk, template_name='message_list.html'):
+	account_data = MailAccount.objects.get(pk=pk)
+	
+	imap_helper = ImapHelper(account_data)
+	data = {}
+	data['account'] = str(account_data)
+	imap_helper.select_mailbox('inbox')
+
+	messages = imap_helper.load_mail_from_mailbox()
+	data['object_list'] = messages
+
+	return render(request, template_name, data)

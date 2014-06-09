@@ -6,4 +6,7 @@ urlpatterns = patterns('',
 	url(r'^new$', 'mail.views.mailaccount_create', name='mailaccount_new'),
 	url(r'^delete/(?P<pk>\d+)$', 'mail.views.mailaccount_delete', name='mailaccount_delete'),
 	url(r'^edit/(?P<pk>\d+)$', 'mail.views.mailaccount_update', name='mailaccount_update'),
+
+	url(r'^select/$', 'mail.views.select_mailaccount', name='select_mailaccount'),
+	url(r'^message/list/(?P<pk>\d+)$', 'mail.views.message_list', name='message_list'),
 )
