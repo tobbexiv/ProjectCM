@@ -28,11 +28,13 @@ class MailAccount(models.Model):
 			return str(self.email)	
 
 
-# class Message(models.Model):
-# 	message_owner = models.ForeignKey(User)
-# 	message_subject = models.CharField(max_length=180, blank=False, null=False)
-# 	message_body = models.TextField(blank=True, null=True)
-# 	message_sender = models.CharField(max_length=180, blank=False, null=False)
+class Message(models.Model):
+	mail_account = models.ForeignKey(MailAccount)
+	mail_source = models.TextField(null=False, blank=False)
+
+	def __str__(self):
+		return self.mail_source
+
 	
 
 

@@ -3,7 +3,7 @@ from django.contrib.auth.decorators import login_required
 
 from mail.imap_helper import ImapHelper
 
-from mail.models import MailAccount, MailHost
+from mail.models import MailAccount, MailHost, Message
 from mail.forms import MailAccountForm, MailHostForm
 
 @login_required
@@ -125,6 +125,13 @@ def message_list(request, pk, template_name='message_list.html'):
 	imap_helper.select_mailbox('inbox')
 
 	messages = imap_helper.load_mail_from_mailbox()
-	data['object_list'] = messages
+
+	for message in messages:
+		m = Message(mail_account=account_data, mail_source=message)
+		m.save()
+
+	ms = Message.objects.filter(mail_account=account_data)
+
+	data['object_list'] = ms
 
 	return render(request, template_name, data)
