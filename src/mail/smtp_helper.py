@@ -45,3 +45,5 @@ class SmtpHelper(object):
 	def close_connection(self):
 		if self.server is not None:
 			self.server.close()
+
+			
