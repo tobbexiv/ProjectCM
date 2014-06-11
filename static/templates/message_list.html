@@ -1,0 +1,13 @@
+{% extends "base.html" %}
+
+{% block title %} {{ title }} {% endblock %}
+{% block content %}
+<br>
+<a href="{% url 'projectcm.views.home' %}">Home</a>
+<ul>
+    {% for message in object_list %}
+    <li>{{ message }}      	
+    </li>
+    {% endfor %}
+</ul>
+{% endblock %}

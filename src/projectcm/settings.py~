@@ -39,7 +39,6 @@ INSTALLED_APPS = (
     'django.contrib.sites',
     'adressbook',
     'accounts',
-    'mail',
     'south',
     'allauth',
     'allauth.account',
@@ -127,5 +126,3 @@ AUTHENTICATION_BACKENDS = (
 )
 
 SITE_ID = 1
-
-EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
