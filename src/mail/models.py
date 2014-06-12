@@ -27,9 +27,18 @@ class MailAccount(models.Model):
 		else:
 			return str(self.email)	
 
+class MailBox(models.Model):
+	name = models.CharField(max_length=60, null=False, blank=False)
+	mail_account = models.ForeignKey(MailAccount)
+
+	def __str__(self):
+		return self.name
+
+
+
 
 class Message(models.Model):
-	mail_account = models.ForeignKey(MailAccount)
+	mail_box = models.ForeignKey(MailBox)
 	mail_source = models.TextField(null=False, blank=False)
 
 	def __str__(self):
