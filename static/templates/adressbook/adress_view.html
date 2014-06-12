@@ -1,4 +1,6 @@
-<br><br>
+{% extends "base.html" %}
+
+{% block content_right %}
 <ul style="list-style-type:none">
 	<li>Name: {{ adress.name }}</li>
 	<li>Street: {{ adress.street }} {{ adress.house_nr }}</li>
@@ -6,6 +8,6 @@
 	<li>Country: {{ adress.country }}</li>
 	<li>Telephone: {{ adress.telephone_nr }}</li>
 	<li>Email: {{ adress.email }}</li>	
-	
-</ul>	<br><br>
+</ul>
 <a href="{% url 'adressbook.views.adress_list' %}">back</a>
+{% endblock %}

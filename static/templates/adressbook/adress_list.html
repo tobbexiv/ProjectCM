@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block content_right %}
+<ul>
+    {% for adress in object_list %}
+    	<li>{{ adress }}: <a href="{% url "adress_view" adress.id %}">show</a> <a href="{% url "adress_edit" adress.id %}">edit</a> <a href="{% url "adress_delete" adress.id %}">delete</a></li>
+    {% endfor %}
+</ul>
+<a href="{% url "adress_new" %}" id="new">New</a>
+{% endblock %}

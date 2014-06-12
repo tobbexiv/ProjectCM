@@ -8,5 +8,5 @@ def home(request):
 	data = {}
 	data['title'] = "ProjectCM Main Page"
 
-	return render(request,'index.html' , data)
+	return render(request,'base.html' , data)
 

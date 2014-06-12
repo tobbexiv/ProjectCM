@@ -1,0 +1,9 @@
+{% extends "base.html" %}
+
+{% block content_right %}
+<ul>
+    {% for message in object_list %}
+    	<li>{{ message }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}

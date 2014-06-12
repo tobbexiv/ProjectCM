@@ -1,14 +1,10 @@
 {% extends "base.html" %}
 
-{% block title %} {{ title }} {% endblock %}
-{% block content %}
-
-<br><br>
+{% block content_right %}
 <ul style="list-style-type:none">
 	<li>Email: {{ account.email }}</li>
 	<li>Send Host Name: {{ send_host.host_name }} </li>	
 	<li>Retrieve Host Name: {{ retrieve_host.host_name }} </li>
-</ul>	<br><br>
+</ul>
 <a href="{% url 'mail.views.mailaccount_list' %}">back</a>
-
 {% endblock %}

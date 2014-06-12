@@ -11,7 +11,7 @@ from mail.models import MailAccount, MailHost, Message, MailBox
 from mail.forms import MailAccountForm, MailHostForm
 
 @login_required
-def mailaccount_list(request, template_name='mailaccount_list.html'):
+def mailaccount_list(request, template_name='mail/mailaccount_list.html'):
 	accounts = MailAccount.objects.filter(mail_account_owner=request.user)	
 	data = {}
 	data['title'] = "Mail Accounts"
@@ -21,7 +21,7 @@ def mailaccount_list(request, template_name='mailaccount_list.html'):
 
 
 @login_required
-def mailaccount_view(request, pk, template_name='mailaccount_view.html'):
+def mailaccount_view(request, pk, template_name='mail/mailaccount_view.html'):
 	account = MailAccount.objects.get(pk=pk)
 	send_host = MailHost.objects.get(pk=account.send_host.id)
 	retrieve_host = MailHost.objects.get(pk=account.retrieve_host.id)	
@@ -35,7 +35,7 @@ def mailaccount_view(request, pk, template_name='mailaccount_view.html'):
 
 
 @login_required
-def mailaccount_create(request, template_name='mailaccount_form.html'):
+def mailaccount_new(request, template_name='mail/mailaccount_form.html'):
 	mailaccount_form = MailAccountForm(request.POST or None)
 	mailhost_send_form = MailHostForm(request.POST or None, prefix='send')
 	mailhost_retrieve_form = MailHostForm(request.POST or None, prefix='retrieve')
@@ -63,7 +63,7 @@ def mailaccount_create(request, template_name='mailaccount_form.html'):
 
 
 @login_required
-def mailaccount_delete(request, pk, template_name='mailaccount_delete.html'):
+def mailaccount_delete(request, pk, template_name='mail/mailaccount_delete.html'):
 	account = get_object_or_404(MailAccount, pk=pk)
 	retrieve_host = get_object_or_404(MailHost, retrieve_host_of=account)
 	send_host = get_object_or_404(MailHost, send_host_of=account)
@@ -78,7 +78,7 @@ def mailaccount_delete(request, pk, template_name='mailaccount_delete.html'):
 
 
 @login_required
-def mailaccount_update(request, pk, template_name='mailaccount_form.html'):
+def mailaccount_edit(request, pk, template_name='mail/mailaccount_form.html'):
 	account = get_object_or_404(MailAccount, pk=pk)
 	retrieve_host = get_object_or_404(MailHost, retrieve_host_of=account)
 	send_host = get_object_or_404(MailHost, send_host_of=account)
@@ -110,7 +110,7 @@ def mailaccount_update(request, pk, template_name='mailaccount_form.html'):
 
 
 @login_required
-def select_mailaccount(request, template_name='select_mailaccount.html'):
+def mailaccount_select(request, template_name='mail/mailaccount_select.html'):
 	accounts = MailAccount.objects.filter(mail_account_owner=request.user)	
 	data = {}
 	data['title'] = "Select Mail Account"

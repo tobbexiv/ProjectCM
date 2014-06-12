@@ -1,3 +1,6 @@
+{% extends "base.html" %}
+
+{% block content_right %}
 <form method="post">{% csrf_token %}
 	<b>Account</b>
     {{ mailaccount.as_p }}
@@ -5,6 +8,6 @@
     {{ send_host.as_p }}
     <b>Retrieve Host</b>
     {{ retrieve_host.as_p }}
-    <input type="submit" value="save" id="save"/>
-    <a href="{% url 'mailaccount_list' %}">cancel</a>
+    <input type="submit" value="save" id="save"/><a href="{% url 'mailaccount_list' %}">cancel</a>
 </form>
+{% endblock %}
