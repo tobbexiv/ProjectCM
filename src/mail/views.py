@@ -143,7 +143,12 @@ def message_list(request, pk, template_name='message_list.html'):
 	imap_helper = ImapHelper(account_data)
 	data = {}
 	data['account'] = str(account_data)
-	imap_helper.select_mailbox('inbox')
+
+	mailbox = request.POST['mailbox']
+	if mailbox is not None:
+		imap_helper.select_mailbox(mailbox)
+	else:
+		imap_helper.select_mailbox('inbox')
 
 	messages = imap_helper.load_mail_from_mailbox()
 
@@ -156,3 +161,5 @@ def message_list(request, pk, template_name='message_list.html'):
 	data['object_list'] = ms
 
 	return render(request, template_name, data)
+
+
