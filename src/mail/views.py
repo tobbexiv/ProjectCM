@@ -153,7 +153,7 @@ def message_list(request, pk, template_name='message_list.html'):
 	messages = imap_helper.load_mail_from_mailbox()
 
 	for message in messages:
-		m = Message(mail_account=account_data, mail_source=message)
+		m = Message(mail_account=account_data, mail_source=message['source'])
 		m.save()
 
 	ms = Message.objects.filter(mail_account=account_data)

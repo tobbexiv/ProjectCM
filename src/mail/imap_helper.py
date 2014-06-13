@@ -59,12 +59,14 @@ class ImapHelper(object):
 
 	def load_mail_from_mailbox(self):
 		mails = []
+		mail = {}
 		typ, data = self.server.uid('search', None, "ALL")
 
 		for num in data[0].split():
 			typ, data = self.server.uid('fetch', num, '(RFC822)')
 			raw_email = data[0][1]
-			mails.append(email.message_from_bytes(raw_email))
+			mail['source'] = email.message_from_bytes(raw_email)
+			mails.append(mail)
 
 		return mails	
 
