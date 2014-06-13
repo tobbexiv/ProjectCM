@@ -17,6 +17,8 @@ class Appointment(models.Model):
 	description = models.TextField(null=True, blank=True)
 	start_date = models.DateTimeField(null=False, blank=False)
 	end_date = models.DateTimeField(null=False, blank=False)
+	TYPE_CHOICES = (('SIN', 'single'), ('SER', 'series'))	
+	appointment_type = models.CharField(max_length=6, choices=TYPE_CHOICES, default='SIN')
 
 	def __str__(self):
 		return self.title
