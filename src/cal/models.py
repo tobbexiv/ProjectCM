@@ -27,14 +27,21 @@ class ShareRights(models.Model):
 	description = models.TextField(null=True, blank=True)
 
 	def __str__(self):
-		return self.code
+		return str(self.code)
 
 class AppointmentShare(models.Model):
 	appointment = models.ForeignKey(Appointment)
 	share_rights = models.ForeignKey(ShareRights)
 	share_with = models.ForeignKey(User)
 
+	def __str__(self):
+		return str(self.appointment.title + " with " + self.share_with.username)
+
 class CalendarShare(models.Model):
 	calendar = models.ForeignKey(Calendar)
 	share_rights = models.ForeignKey(ShareRights)
 	share_with = models.ForeignKey(User)
+
+	def __str__(self):
+                return str(self.calendar.name + " with " + self.share_with.username)
+
