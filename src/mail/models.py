@@ -39,12 +39,19 @@ class MailBox(models.Model):
 
 class Message(models.Model):
 	mail_box = models.ForeignKey(MailBox)
+	sender = models.CharField(max_length=60, null=False, blank=False)
 	mail_source = models.TextField(null=False, blank=False)
-
+	
 	def __str__(self):
 		return self.mail_source
 
 	
-
+class Recipient(models.Model):
+	adress = models.EmailField(null=False, blank=False)
+	name = models.CharField(max_length=60, null=True, blank=True)
+	message = models.ForeignKey(Message, related_name='recipients')
+	
+	def __str__(self):
+		return self.adress
 
 	
