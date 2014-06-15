@@ -121,4 +121,32 @@ def appointment_list(request):
 	else:
 		return HttpResponse("invalid request")
 
-		
+@login_required
+def appointment_create(request):
+	form = AppointmentForm(request.POST or None)
+	if form.is_valid() and request.method="POST" and request.is_ajax:
+		appointment = form.save()
+
+		return HttpResponse("data saved")
+
+	return render(request, 'calendar/appointment_form.html')
+
+@login_required
+def appointment_update(request, pk, template_name='calendar/appointment_form.html'):
+	appointment = get_object_or_404(Appointment, pk=pk)
+	form = AppointmentForm(rquest.POST or None, instance=appointment)
+	if form.is_valid() and request.method="POST" and request.is_ajax:
+		form.save()
+		return HttpRepsonse("data saved")
+
+	return render(request, template_name, {'form':form})
+	
+
+@login_required
+def appointment_delete(request, pk, template_name='appointment_delete'):
+	appointment = get_object_or_404(Appointment, pk=pk)
+	if request.method="POST" and request.is_ajax:
+		appointment.delete()
+		return HttpResponse("data deleted")
+
+	return render(request, template_name, {'object':appointment})	
