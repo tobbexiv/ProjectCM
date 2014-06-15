@@ -11,24 +11,30 @@ class Calendar(models.Model):
 		return self.name
 
 
+class Series(models.Model):
+        first_occurence = models.DateField(null=False, blank=False)
+        last_occurence = models.DateField(null=True, blank=True)
+        reoccurences = models.CharField(max_length=60, null=False, blank=False)
+
+        def __str__(self):
+                return str("series from " + self.first_occurence + " to " + self.last_occurence)
+
+
 class Appointment(models.Model):
 	calendar = models.ForeignKey(Calendar)
 	title = models.CharField(max_length=60, blank=False, null=False)
 	description = models.TextField(null=True, blank=True)
 	start_date = models.DateTimeField(null=False, blank=False)
 	end_date = models.DateTimeField(null=False, blank=False)
-	TYPE_CHOICES = (('SIN', 'single'), ('SER', 'series'))	
-	appointment_type = models.CharField(max_length=6, choices=TYPE_CHOICES, default='SIN')
-	reoccurences = models.CharField(max_length=60, null=True, blank=True)
+	series = models.ForeignKey(Series, null=True, blank=True)
 
 
 	def __str__(self):
 		return self.title
 
-
 class SeriesExceptions(models.Model):
-	series = models.ForeignKey(Appointment, related_name='series_of')
-	replacement = models.ForeignKey(Appointment, related_name='replacement_of')
+	series = models.ForeignKey(Series)
+	replacement = models.ForeignKey(Appointment)
 
 	def __str__(self):
 		return str(series.title + " replaced with " + replacement.title)
