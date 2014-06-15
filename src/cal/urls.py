@@ -6,5 +6,7 @@ urlpatterns = patterns('',
         url(r'^view/(?P<pk>\d+)$', 'cal.views.calendar_view', name='calendar_view'),
         url(r'^edit/(?P<pk>\d+)$', 'cal.views.calendar_update', name='calendar_update'),
         url(r'^delete/(?P<pk>\d+)$', 'cal.views.calendar_delete', name='calendar_delete'),
+	url(r'^appointment/list$', 'cal.views.appointment_list', name='appointment_view'),
+
 )
 
