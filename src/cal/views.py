@@ -2,7 +2,7 @@ from django.shortcuts import render
 from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
-
+from django.core import serializers
 import json
 from cal.models import Calendar
 from cal.forms import CalendarForm
@@ -14,8 +14,9 @@ def calendar_list(request, template_name='calendar/calendar_list.html'):
 	response['userName'] = request.username
 	response['success'] = True
 	response['data'] = calendar
-
-	return render(request, template_name, response)
+	
+	json_response = serializers.serialize('json', response)
+	return render(request, template_name, json_response)
 
 @login_required
 def calendar_view(request, template_name='calendar/calendar_view.html'):
