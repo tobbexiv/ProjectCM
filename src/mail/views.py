@@ -144,22 +144,35 @@ def message_list(request, pk, template_name='message_list.html'):
 	data = {}
 	data['account'] = str(account_data)
 
-	mailbox = request.POST['mailbox']
-	if mailbox is not None:
+	mailbox = request.POST.get('mailbox', False)
+	if mailbox is not False:
 		imap_helper.select_mailbox(mailbox)
 	else:
-		imap_helper.select_mailbox('inbox')
+		imap_helper.select_mailbox('INBOX')
+		mailbox = 'INBOX'
+
+	mb = MailBox.objects.get(mail_account=account_data.id, name=mailbox)
 
 	messages = imap_helper.load_mail_from_mailbox()
 
-	for message in messages:
-		m = Message(mail_account=account_data, mail_source=message['source'])
-		m.save()
+	for message in messages:		
+		check = Message.objects.filter(identifier=message['identifier'], mail_box=mb)
+		
+		if not check:
+			m = Message(mail_box=mb, sender=message['sender'], subject=message['subject'], identifier=message['identifier'], mail_source=message['source'])
+			m.save()
 
-	ms = Message.objects.filter(mail_account=account_data)
+	ms = Message.objects.filter(mail_box=mb)
 
 	data['object_list'] = ms
 
 	return render(request, template_name, data)
 
 
+@login_required
+def message_view(request, pk, template_name='message_view.html'):
+	message = Message.objects.get(pk=pk)
+	data = {}
+	data['message'] = message 
+
+	return render(request, template_name, data)
