@@ -19,9 +19,19 @@ class Appointment(models.Model):
 	end_date = models.DateTimeField(null=False, blank=False)
 	TYPE_CHOICES = (('SIN', 'single'), ('SER', 'series'))	
 	appointment_type = models.CharField(max_length=6, choices=TYPE_CHOICES, default='SIN')
+	reoccurences = models.CharField(max_length=60, null=True, blank=True)
+
 
 	def __str__(self):
 		return self.title
+
+
+class SeriesExceptions(models.Model):
+	series = models.ForeignKey(Appointment, related_name='series_of')
+	replacement = models.ForeignKey(Appointment, related_name='replacement_of')
+
+	def __str__(self):
+		return str(series.title + " replaced with " + replacement.title)
 
 
 class ShareRights(models.Model):
