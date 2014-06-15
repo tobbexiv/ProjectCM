@@ -3,17 +3,19 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 
-
-from calendar.models import Calendar
-from calendar.forms import CalendarForm
+import json
+from cal.models import Calendar
+from cal.forms import CalendarForm
 
 @login_required
 def calendar_list(request, template_name='calendar/calendar_list.html'):
 	calendar = Calendar.object.filter(calendar_owner=request.user)
-	data = {}
-	data['calendar'] = calendar
+	response = {}
+	response['userName'] = request.username
+	response['success'] = True
+	response['data'] = calendar
 
-	return render(request, template_name, data)
+	return render(request, template_name, response)
 
 @login_required
 def calendar_view(request, template_name='calendar/calendar_view.html'):
@@ -25,7 +27,7 @@ def calendar_view(request, template_name='calendar/calendar_view.html'):
 @login_required
 def calendar_create(request, template_name='calendar/calendar_form.html'):
 	form = CalendarForm(request.POST or none)
-	if form.is_valid()
+	if form.is_valid():
 		calendar = form.save(commit=False)
 		calendar.calendar_owner = request.user
 		calendar.save()

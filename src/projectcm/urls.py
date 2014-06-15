@@ -16,6 +16,7 @@ urlpatterns = patterns('',
 	url(r'^accounts/', include('allauth.urls')),
 	url(r'^accounts/', include('accounts.urls')),
 	url(r'^mail/', include('mail.urls')),
+	url(r'^calendar/', include('cal.urls')),
 	# url(r'^accounts/', include('registration.backends.default.urls')),
 )
 	
