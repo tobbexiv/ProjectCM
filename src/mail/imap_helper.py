@@ -1,6 +1,7 @@
 import imaplib
 import email
 import re
+import hashlib
 
 class ImapHelper(object):
 
@@ -59,12 +60,23 @@ class ImapHelper(object):
 
 	def load_mail_from_mailbox(self):
 		mails = []
+		
 		typ, data = self.server.uid('search', None, "ALL")
+		h = hashlib.sha256()
 
 		for num in data[0].split():
+			mail = {}
 			typ, data = self.server.uid('fetch', num, '(RFC822)')
 			raw_email = data[0][1]
-			mails.append(email.message_from_bytes(raw_email))
+			msg = email.message_from_bytes(raw_email)
+			mail['source'] = msg
+			mail['sender'] = msg['from']
+			mail['receiver'] = msg['to']
+			mail['subject'] = msg['subject']
+			ident = h.update(raw_email)
+			mail['identifier'] = h.hexdigest() 
+			mails.append(mail)
+		
 
 		return mails	
 

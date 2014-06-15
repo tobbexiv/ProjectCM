@@ -4,7 +4,7 @@ from django.contrib import admin
 
 #------------------------------------------------
 ## For test use only:
-from .models import MailAccount, MailHost, Message, MailBox
+from .models import MailAccount, MailHost, Message, MailBox, Recipient
 
 class MailAccoutAdmin(admin.ModelAdmin):
  	class Meta:
@@ -31,4 +31,9 @@ class MailBoxAdmin(admin.ModelAdmin):
 admin.site.register(MailBox, MailBoxAdmin)
 
 
+class RecAdmin(admin.ModelAdmin):
+	class Meta:
+		model = Recipient
+
+admin.site.register(Recipient, RecAdmin)
 #------------------------------------------------

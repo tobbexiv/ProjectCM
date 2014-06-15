@@ -10,4 +10,6 @@ urlpatterns = patterns('',
 	url(r'^select/$', 'mail.views.mailaccount_select', name='mailaccount_select'),
 	url(r'^message/list/(?P<pk>\d+)$', 'mail.views.message_list', name='message_list'),
 	url(r'^mailboxes/list/(?P<mail_account_id>\d+)$', 'mail.views.mailboxes_list', name='mailboxes_list'),
+
+	url(r'^messages/view/(P<pk>\d+)$', 'mail.views.message_view', name='message_view'),
 )
