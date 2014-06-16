@@ -12,6 +12,7 @@
 		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
 		<script type="text/javascript" src="{{ STATIC_FILES }}js/language_data.js"></script>
 		<script type="text/javascript" src="{{ STATIC_FILES }}js/forms.js"></script>
+		{% block js_imports %}{% endblock %}
 	</head>
 	<body>
 		<div id="message_bar"></div>
@@ -23,6 +24,7 @@
 						<ul>
 							<li class="menu_item_base"><span id="user">{{ request.user.username }}</span>&nbsp;<a id="logout" href="/account/logout">(Logout)</a></li>
 							<li class="menu_item"><a href="{% url 'account.views.account_show'  %}">Show Userdata</a></li>
+							<li class="menu_item"><a href="{% url 'cal.views.calendar_base' %}">Calendar</a></li>
 							<li class="menu_item"><a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a></li>
 							<li class="menu_item"><a href="{% url 'mail.views.mailaccount_list' %}">Mail Accounts</a></li>
 							<li class="menu_item"><a href="{% url 'mail.views.mailaccount_select' %}">Show Messages</a></li>

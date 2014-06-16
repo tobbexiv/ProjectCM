@@ -1,5 +1,24 @@
 {% extends "base.html" %}
 
+
+{% block js_imports %}
+	<script type="text/javascript" src="{{ STATIC_FILES }}js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="{{ STATIC_FILES }}js/calendar.js"></script>
+{% endblock %}
+
+{% block submenu %}
+<ul>
+	<li id="view_selector_day" class="menu_item active" onclick="cal.View.show('day');">Tag</li>
+	<li id="view_selector_week" class="menu_item" onclick="cal.View.show('week');">Woche</li>
+	<li id="view_selector_month" class="menu_item" onclick="cal.View.show('month');">Monat</li>
+	<li id="view_selector_list" class="menu_item" onclick="cal.View.show('list');">Liste</li>
+</ul>
+{% endblock %}
+
+{% block content_left %}
+	<div id="small_calendar_wrapper"></div>
+	<div id="calendar_list_wrapper"></div>
+{% endblock %}
+
 {% block content_right %}
-Kalender :)
 {% endblock %}
