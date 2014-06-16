@@ -273,7 +273,7 @@ def series_create(request, template_name='cal/series_form.html'):
 	return render(request, template_name, data)
 
 @login_required
-def series_update(request, template_name='cal/series_form.html'):
+def series_update(request, pk, template_name='cal/series_form.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
 	series = get_object_or_404(Series, pk=appointment.series)
 	appointment_form = AppointmentForm(request.POST or None, instance=appointment)
