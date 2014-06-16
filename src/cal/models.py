@@ -57,7 +57,7 @@ class AppointmentShare(models.Model):
 
 class CalendarShare(models.Model):
 	calendar = models.ForeignKey(Calendar)
-	share_rights = models.ForeignKey(ShareRights)
+	share_rights = models.ForeignKey(ShareRights,  blank=True, null=True)
 	share_with = models.ForeignKey(User)
 
 	def __str__(self):

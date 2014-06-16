@@ -1,4 +1,4 @@
-from django.forms import ModelForm, ModelChoiceField
+from django.forms import ModelForm, ModelChoiceField, CharField
 from django.contrib.auth.models import User
 from cal.models import Calendar, Appointment, Series, CalendarShare
 
@@ -17,15 +17,18 @@ class SeriesForm(ModelForm):
 		model = Series
 
 class CalShareForm(ModelForm):
-	calendar = ModelChoiceField(queryset=Calendar.objects.none())	
+	
 	share_with = ModelChoiceField(queryset=User.objects.all())	
 
 	def __init__(self, user, *args, **kwargs):
 		super(CalShareForm, self).__init__(*args, **kwargs)
-		self.fields['calendar'].queryset = Calendar.objects.filter(calendar_owner=user)
-
+		usero = User.objects.get(username__exact=user)
+		self.fields['calendar'].queryset = Calendar.objects.filter(calendar_owner=usero)
+	
 	class Meta:
-		model = CalendarShare		
+		model = Appointment		
+		fields = ['calendar', 'share_with']
+		
 
 
 				

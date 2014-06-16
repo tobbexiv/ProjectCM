@@ -254,18 +254,19 @@ def series_delete(request, pk, template_name='cal/series_delete.html'):
 
 
 @login_required
-def calshare_create(request, template_name='adressbook/adress_form.html'):
-	form = CalShareForm(request.POST or None, initial={'user':request.user})
+def calshare_create(request, template_name='generic_form.html'):
+	user = request.user.username
+	form = CalShareForm(user=user)
 	if form.is_valid() and request.method == "GET": #and request.is_ajax:
 		calshare = form.save()
 
 		response = {}
-		response['userName'] = request.user.username
+		response['userName'] = user
 		response['success'] = True
 		response['data'] = 'Calendar Share successfully created'
 
 		json_response = json.dumps(response)
 		return HttpResponse(json_response, content_type="application/json")
 
-	return render(request, template_name)
+	return render(request, template_name, {'form':form})
 
