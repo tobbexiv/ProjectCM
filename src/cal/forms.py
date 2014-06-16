@@ -20,13 +20,14 @@ class CalShareForm(ModelForm):
 	
 	share_with = ModelChoiceField(queryset=User.objects.all())	
 
-	def __init__(self, user, *args, **kwargs):
+	def __init__(self, *args, **kwargs):
+		user = kwargs.pop('user')
 		super(CalShareForm, self).__init__(*args, **kwargs)
 		usero = User.objects.get(username__exact=user)
 		self.fields['calendar'].queryset = Calendar.objects.filter(calendar_owner=usero)
 	
 	class Meta:
-		model = Appointment		
+		model = CalendarShare		
 		fields = ['calendar', 'share_with']
 		
 
