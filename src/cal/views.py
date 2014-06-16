@@ -69,7 +69,7 @@ def calendar_delete(request, pk, template_name='calendar/calendar_delete.html'):
 
 @login_required
 def appointment_list(request):
-	if request.method == request.method == "POST" and request.is_ajax: #"GET": 
+	if request.method == "POST" and request.is_ajax: #"GET": 
 		json_data = json.loads(request.raw_post_data)
 		#now = datetime.utcnow().replace(tzinfo=utc)
 		from_date = json_data['fetch_after_date']#now - timedelta(days=7) #
