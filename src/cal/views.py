@@ -5,7 +5,7 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.core import serializers
 import json
 from cal.models import Calendar, Appointment, Series
-from cal.forms import CalendarForm
+from cal.forms import CalendarForm, AppointmentForm, SeriesForm
 from django.http import HttpResponse
 from cal.serializer import CalSerializer, DateTimeEncoder
 from django.core.serializers.json import DjangoJSONEncoder 
@@ -164,3 +164,44 @@ def appointment_delete(request, pk, template_name='appointment_delete'):
 		return HttpResponse("data deleted")
 
 	return render(request, template_name, {'object':appointment})	
+
+@login_required
+def series_create(request, template_name='cal/series_create.html'):
+	appointment_form = AppointmentForm(request.POST or None)
+	series_form = SeriesForm(request.POST or None)
+
+	if appointment_form.is_valid() and series_form.is_valid():
+		series = series_form.save()
+		appointment = appointment_form.save(commit=False)
+		appointment.series = series
+		appointment.save()
+
+		return HttpResponse("data saved")
+
+	data = {}
+	data['appointment'] = appointment_form
+	data['series'] = series_form
+
+	return render(request, template_name, data)
+
+@login_required
+def series_delete(request, pk, template_name='cal/series_delete.html'):
+	appointment = get_object_or_404(Appointment, pk=pk)
+	series = get_object_or_404(Series, pk=appointment.series)
+
+	if request.method == 'POST' and request.is_ajax:
+		appointment.delete()
+		series.delete()
+		return HttpResponse('data deleted')
+
+	data = {}
+	data['appointment'] = appointment
+	data['series']	= series
+
+	return render(request, template_name, data)	
+
+
+
+
+
+
