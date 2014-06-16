@@ -1,0 +1,34 @@
+{% load static %}
+{% get_media_prefix as STATIC_FILES %}
+
+<!DOCTYPE html>
+<html>
+	<head>
+		<title>ProjectCM - a software engineering project</title>
+		<style type="text/css">
+			@import "{{ STATIC_FILES }}css/styles_login_register.css" screen;
+		</style>
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script type="text/javascript" src="{{ STATIC_FILES }}js/forms.js"></script>
+	</head>
+	<body>
+		<div id="wrapper">
+			<<div id="wrapper">
+				<div id="login_root">
+					<div id="login_header">
+						ProjectCM
+					</div>
+					<div id="login_content">
+						<div id="login_style_badge">
+							<span id="login_show">Login</span>
+						</div>
+						<div id="login_form_box">
+							{% block content %}{% endblock %}
+						</div>
+					</div>
+					<div id="login_form_footer">ProjectCM - Software Engineering Project - Andreas Haberl - Tobias Engelmann - Tobias Seber</div>
+				</div>
+			</div>
+		</div>
+	</body>
+</html>

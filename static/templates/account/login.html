@@ -1,3 +1,5 @@
+{% extends "account/login_register_base.html" %}
+
 {% block content %}
 <form method="POST" action="{% url 'django.contrib.auth.views.login' %}">
 	{% csrf_token %}
