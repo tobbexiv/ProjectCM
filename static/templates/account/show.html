@@ -1,7 +1,6 @@
-<h1>My data {{ request.user.username }}</h1>
-<br>
-<a href="{% url 'projectcm.views.home' %}">Home</a>
-<br>
+{% extends "base.html" %}
+
+{% block content_right %}
 <table>
 	<tr><td>{{ userdata.first_name }} {{ userdata.last_name }} ({{ userdata.username }})</td></tr>
 	<tr><td>{{ userdata.email }}</td></tr>
@@ -11,4 +10,4 @@
 	<tr><td><a href="{% url "account_edit" userdata.id %}">edit</a></td></tr>
 	<tr><td><a href="/accounts/password/change">change password</a></td></tr>
 </table>	
-
+{% endblock %}
