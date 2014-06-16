@@ -2,7 +2,7 @@ from django.contrib import admin
 
 # Register your models here
 
-from .models import Calendar, Appointment, ShareRights, AppointmentShare, CalendarShare
+from .models import Calendar, Appointment, ShareRights, AppointmentShare, CalendarShare, Series
 
 class CalendarAdmin(admin.ModelAdmin):
 	class Meta:
@@ -28,4 +28,9 @@ class CalendarShareAdmin(admin.ModelAdmin):
 	 class Meta:
                 model = CalendarShare
 admin.site.register(CalendarShare, CalendarShareAdmin)
+
+class SeriesAdmin(admin.ModelAdmin):
+	 class Meta:
+                model = Series
+admin.site.register(Series, SeriesAdmin)
 
