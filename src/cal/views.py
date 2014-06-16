@@ -48,12 +48,12 @@ def calendar_create(request):
 
 		return HttpResponse("data saved")
 
-	return render(request, 'cal/calendar_form.html', {'form':form})
+	return render(request, 'generic_form.html', {'form':form})
 	
 
 
 @login_required
-def calendar_update(request, pk, template_name='cal/calendar_form.html'):
+def calendar_update(request, pk, template_name='generic_form.html'):
         calendar = get_object_or_404(Calendar, pk=pk)
         form = CalendarForm(request.POST or None, instance=calendar)
         if form.is_valid() and request.method == "POST" and request.is_ajax:
@@ -146,7 +146,7 @@ def appointment_create(request):
 	return render(request, 'cal/appointment_form.html')
 
 @login_required
-def appointment_update(request, pk, template_name='cal/appointment_form.html'):
+def appointment_update(request, pk, template_name='generic_form.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
 	form = AppointmentForm(rquest.POST or None, instance=appointment)
 	if form.is_valid() and request.method == "POST" and request.is_ajax:
