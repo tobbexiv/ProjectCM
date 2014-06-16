@@ -36,14 +36,25 @@ class SmtpHelper(object):
 		server.set_debuglevel(False)
 		server.login(account_data['logon_name'], account_data['password'])		
 
+		return server
+
 
 	def send_message(self, message):
 		if self.server is not None:
-			self.server.sendmail(message['sender'], message['destination'], message['body'].as_string())
-
+			try:
+				print('send')
+				self.server.sendmail(message['sender'], message['destination'], message['body'])
+			except SMTPRecipientsRefused:
+				print('rec refused')
+			except SMTPHeloError:
+				print('helo')
+			except SMTPSenderRefused:
+				print('snder')
+			except SMTPDataError:		
+				print('data')
+		
 
 	def close_connection(self):
 		if self.server is not None:
 			self.server.close()
-
-			
+		
