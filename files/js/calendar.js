@@ -297,7 +297,12 @@ var cal = new function Calendar() {
 				if(callbackSuccess) {
 					callbackSuccess();
 				}
-				var parsedData = JSON.parse(data);
+				var parsedData = data;
+
+				if(typeof data === "string") {
+					parsedData = JSON.parse(data);
+				}
+
 				_this.Helper.updateUserName(parsedData.userName);
 				_this.Helper.showHint(parsedData.data, parsedData.success == true ? 'success' : 'error');
 
@@ -345,7 +350,7 @@ var cal = new function Calendar() {
 		 * @param	{function}	callback
 		 *   Callback on success.
 		 */
-		this.fetch = function(callback) {
+		this.fetchAll = function(callback) {
 			var _callback = {
 				success:	function(data) {
 					var wrapper = $('<table />', {'id': 'calendar_list'});
@@ -375,7 +380,7 @@ var cal = new function Calendar() {
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/new/', parent, function() {
-					setTimeout(_this.Cal.fetch, 500);
+					setTimeout(_this.Cal.fetchAll, 500);
 				});
 			}
 			
@@ -387,7 +392,7 @@ var cal = new function Calendar() {
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/view/' + calendarId, parent, function() {
-					setTimeout(_this.Cal.fetch, 500);
+					setTimeout(_this.Cal.fetchAll, 500);
 				});
 			}
 			
@@ -399,7 +404,7 @@ var cal = new function Calendar() {
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/edit/' + calendarId, parent, function() {
-					setTimeout(_this.Cal.fetch, 500);
+					setTimeout(_this.Cal.fetchAll, 500);
 				});
 			}
 			
@@ -411,7 +416,7 @@ var cal = new function Calendar() {
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/delete/' + calendarId, parent, function() {
-					setTimeout(_this.Cal.fetch, 500);
+					setTimeout(_this.Cal.fetchAll, 500);
 				});
 			}
 			
@@ -429,11 +434,11 @@ var cal = new function Calendar() {
 		 *   The id of the permission level.
 		 */
 		this.grantPermission = function(calendarId) {
-			var title	= 'Kalenderrechte Vergeben';
+			var title	= 'Kalenderrechte vergeben';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/calshare/create/', parent, function() {
-					setTimeout(_this.Cal.fetch, 500);
+					setTimeout(_this.Cal.fetchAll, 500);
 				});
 			}
 			
@@ -450,6 +455,49 @@ var cal = new function Calendar() {
 	 * Calls for series operations.
 	 */
 	function _Series() {
+		/**
+		 * Create a new appointment (series).
+		 */
+		this.create = function() {
+			var title	= 'Serientermin erstellen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/series/create/', parent, function() {
+					setTimeout(_this.View.show, 500);
+				});
+			}
+			
+			_this.Overlay.show(title, null, callback);
+		};
+		
+		/**
+		 * Delete an appointment (series).
+		 * 
+		 * @param	{int}	id
+		 *   The id of the series to delete.
+		 */
+		this.deleteSer = function(appointmentId) {
+			var title	= 'Serientermin löschen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/series/delete/' + appointmentId, parent, function() {
+					setTimeout(_this.View.show, 500);
+				});
+			}
+			
+			_this.Overlay.show(title, null, callback);
+		};
+	}
+	
+	/**
+	 * Series operation functions.
+	 */
+	this.Series = new _Series;
+	
+	/**
+	 * Class for series exception operations.
+	 */
+	function _Appointment() {
 		/**
 		 * Get all appointments in a specified time of the user logged in.
 		 * 
@@ -479,144 +527,7 @@ var cal = new function Calendar() {
 			
 			_this.Helper.getJsonData('/calendar/appointment/list/', _request, _callback);
 		};
-		
-		/**
-		 * Get a single appointment (series).
-		 * 
-		 * @param	{int}		seriesId
-		 *   The id of the series to fetch.
-		 * @param	{function}	callback
-		 *   Callback to be run after the data is provided.
-		 */
-		this.fetch = function(seriesId, callback) {
-			var _callback = {
-				success:	function(data) {
-					callback(data);
-				}
-			}
-			
-			var _request = {
-				series_id:	seriesId
-			};
-			
-			_this.Helper.getJsonData('/calendar/appointment/view/', _request, _callback);
-		};
-		
-		/**
-		 * Create a new appointment (series).
-		 */
-		this.create = function() {
-			var _callback = {
-				success:	function(data) {
-					_this.Helper.showHint('Der Termin wurde erfolgreich erstellt.', 'success');
-					$('#overlay_panel_close').click();
-					_this.View.show();
-				}
-			}
-			var fOcc = null;
-			var lOcc = null;
-			var freq = null;
-			
-			if($('#series').data('checked')) {
-				fOcc	= new Date($('#fOccHidden').val()).getTime() / 1000;
-				
-				if(!$('#endless').data('checked')) {
-					lOcc	= new Date($('#lOccHidden').val()).getTime() / 1000;
-				}
-				
-				freq = $('#frequency').val();
-			}
-			
-			var _request = {
-				calendar_id:		$('#calendar').val(),
-				name:				$('#name').val(),
-				notes:				$('#notes').val(),
-				first_occurence:	fOcc,
-				last_occurence:		lOcc,
-				starttime:			new Date($('#sTimeHidden').val()).getTime() / 1000,
-				endtime:			new Date($('#eTimeHidden').val()).getTime() / 1000,
-				frequency:			freq,
-				location:			null
-			};
-			
-			_this.Helper.getJsonData('createSeries', _request, _callback);
-		};
-		
-		/**
-		 * Delete an appointment (series).
-		 * 
-		 * @param	{int}	id
-		 *   The id of the series to delete.
-		 */
-		this.remove = function(id) {
-			var _callback = {
-				success:	function(data) {
-					_this.Helper.showHint('Der Termin wurde erfolgreich gelöscht.', 'success');
-					$('#overlay_panel_close').click();
-					_this.View.show();
-				}
-			}
-			
-			var _request = {
-				'id':	id
-			};
-			
-			_this.Helper.getJsonData('deleteSeries', _request, _callback);
-		};
-		
-		/**
-		 * Update an appointment (series).
-		 * 
-		 * @param	{int}		id
-		 *   The id of the series to update.
-		 * @param	{string}	name
-		 *   The name of the series.
-		 * @param	{int}		sTime
-		 *   The starttime as UNIX timestamp.
-		 * @param	{int}		eTime
-		 *   The endtime as UNIX timestamp.
-		 * @param	{string}	notes
-		 *   Notes for the series.
-		 * @param	{int}		fOcc
-		 *   First occurence of the series as UNIX timestamp.
-		 * @param	{int}		lOcc
-		 *   Last occurence ot the series as UNIX timestamp.
-		 * @param	{string}	freq
-		 *   The frequency of the series (daily or weekly).
-		 */
-		this.update = function(id, name, sTime, eTime, notes, fOcc, lOcc, freq) {
-			var _callback = {
-				success:	function(data) {
-					_this.Helper.showHint('Der Termin wurde erfolgreich aktualisiert.', 'success');
-					$('#overlay_panel_close').click();
-					_this.View.show();
-				}
-			}
-			
-			var _request = {
-				name:				name,
-				notes:				notes,
-				first_occurence:	fOcc,
-				last_occurence:		lOcc,
-				starttime:			sTime,
-				endtime:			eTime,
-				frequency:			freq,
-				id:					id
-			};
-			
-			_this.Helper.getJsonData('updateSeries', _request, _callback);
-		};
-	}
-	
-	/**
-	 * Series operation functions.
-	 */
-	this.Series = new _Series;
-	
-	/**
-	 * Class for series exception operations.
-	 */
-	function _Exception() {
+
 		/**
 		 * Get a single exception.
 		 * 
@@ -625,56 +536,36 @@ var cal = new function Calendar() {
 		 * @param	{int}	occurence
 		 *   The number of the occurence of the exception.
 		 */
-		this.fetch = function(seriesId, occurence) {
-			var _callback = {
-				success:	function(data) {
-					var title = 'Ausnahme eintragen';
-					
-					var content = new Array();
-					var contentWrapper = $('<div />');
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Startzeit');
-					$('<input />', {'id': 'sTime', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(new Date(data.starttime * 1000), true, true)}).appendTo(contentWrapper);
-					$('<input />', {'id': 'sTimeHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(new Date(data.starttime * 1000), true, true, '/')}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Endzeit');
-					$('<input />', {'id': 'eTime', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(new Date(data.endtime * 1000), true, true)}).appendTo(contentWrapper);
-					$('<input />', {'id': 'eTimeHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(new Date(data.endtime * 1000), true, true, '/')}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Notizen');
-					$('<textarea />', {'id': 'notes', 'class': 'cal_form_input'}).appendTo(contentWrapper).val(data.notes);
-					
-					var buttonWrapper	= $('<div />', {'class': 'button_bar'});
-					var insert			= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Eintragen'}).appendTo(buttonWrapper);
-					var deleteBtn		= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Löschen'}).appendTo(buttonWrapper);
-					
-					content.push(contentWrapper);
-					content.push(buttonWrapper);
-					
-					insert.click(function() {
-						var sTime = new Date($('#sTimeHidden').val()).getTime() / 1000;
-						var eTime = new Date($('#eTimeHidden').val()).getTime() / 1000;
-						var notes = $('#notes').val();
-						
-						_this.Exception.insert(data.id, data.occurence, sTime, eTime, notes);
-					});
-					
-					deleteBtn.click(function() {
-						_this.Exception.remove(data.id, data.occurence);
-					});
-					
-					var callback = function() {
-						$('#sTime').datetimepicker(_this.Helper.getDateTimePickerOptions({altField: '#sTimeHidden'}));
-						$('#eTime').datetimepicker(_this.Helper.getDateTimePickerOptions({altField: '#eTimeHidden'}));
-					};
-					
-					_this.Overlay.show(title, content, callback);
-				}
+		this.show = function(appointmentId) {
+			var title	= 'Termin anzeigen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/appointment/view/' + appointmentId, parent, function() {
+					setTimeout(_this.View.show, 500);
+				});
 			}
 			
-			var _request = {
-				series_id:	seriesId,
-				occurence:	occurence
-			};
+			_this.Overlay.show(title, null, callback);
+		};
+
+		/**
+		 * Get a single exception.
+		 * 
+		 * @param	{int}	seriesId
+		 *   Id of the exception to fetch.
+		 * @param	{int}	occurence
+		 *   The number of the occurence of the exception.
+		 */
+		this.edit = function(appointmentId) {
+			var title	= 'Termin bearbeiten';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/appointment/update/' + appointmentId, parent, function() {
+					setTimeout(_this.View.show, 500);
+				});
+			}
 			
-			_this.Helper.getJsonData('getException', _request, _callback);
+			_this.Overlay.show(title, null, callback);
 		};
 		
 		/**
@@ -691,25 +582,16 @@ var cal = new function Calendar() {
 		 * @param	{int}	notes
 		 *   Additional notes for the exception.
 		 */
-		this.insert = function(seriesId, occurence, sTime, eTime, notes) {
-			var _callback = {
-				success:	function(data) {
-					_this.Helper.showHint('Die Ausnahme wurde erfolgreich gespeichert.', 'success');
-					$('#overlay_panel_close').click();
-					_this.View.show();
-				}
+		this.create = function() {
+			var title	= 'Termin ertellen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/appointment/create/', parent, function() {
+					setTimeout(_this.View.show, 500);
+				});
 			}
 			
-			var _request = {
-				series_id:				seriesId,
-				notes:					notes,
-				starttime:				sTime,
-				endtime:				eTime,
-				overwritten_occurence:	occurence,
-				location:				null
-			};
-			
-			_this.Helper.getJsonData('createException', _request, _callback);
+			_this.Overlay.show(title, null, callback);
 		};
 		
 		/**
@@ -720,28 +602,23 @@ var cal = new function Calendar() {
 		 * @param	{int}	occurence
 		 *   Occurence of the exception in the series.
 		 */
-		this.remove = function(seriesId, occurence) {
-			var _callback = {
-				success:	function(data) {
-					_this.Helper.showHint('Die Ausnahme wurde erfolgreich gelöscht.', 'success');
-					$('#overlay_panel_close').click();
-					_this.View.show();
-				}
+		this.deleteApp = function(appointmentId) {
+			var title	= 'Termin löschen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/appointment/delete/' + appointmentId, parent, function() {
+					setTimeout(_this.View.show, 500);
+				});
 			}
 			
-			var _request = {
-				series_id:				seriesId,
-				overwritten_occurence:	occurence
-			};
-			
-			_this.Helper.getJsonData('deleteException', _request, _callback);
+			_this.Overlay.show(title, null, callback);
 		};
 	}
 	
 	/**
 	 * Series exception operation functions.
 	 */
-	this.Exception = new _Exception;
+	this.Appointment = new _Appointment;
 	
 	/**
 	 * Class for small calendar operations.
@@ -1025,27 +902,81 @@ var cal = new function Calendar() {
 			 * @param	{int}	occurence
 			 *   Occurence of the exception within the series.
 			 */
-			this.seriesOrException = function(seriesId, occurence) {
+			this.createSeriesOrAppointment = function(seriesId, occurence) {
 				var title	= 'Bitte wählen';
 				var content	= new Array();
 				
-				content.push($('<div />').text('Möchten sie die Serie oder ein einzelnes Vorkommen bearbeiten?'));
+				content.push($('<div />').text('Möchten sie einen Serietermin oder einen Einzeltermin anlegen?'));
 				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
 				var series			= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Serie'}).appendTo(buttonWrapper);
-				var exception		= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Vorkommen'}).appendTo(buttonWrapper);
+				var appointment		= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Einzeltermin'}).appendTo(buttonWrapper);
 				
 				series.click(function() {
-					_this.Overlay.Edit.series(seriesId);
+					_this.Series.create();
 				});
 				
-				exception.click(function() {
-					_this.Exception.fetch(seriesId, occurence);
+				appointment.click(function() {
+					_this.Appointment.create();
 				});
 				
 				content.push(buttonWrapper);
 				
 				_this.Overlay.show(title, content);
-			}
+			};
+
+			this.seriesRud = function(appointmentId, appointmentName) {
+				var title	= 'Bitte wählen';
+				var content	= new Array();
+				
+				content.push($('<div />').text('Was möchten sie mit der Serie ' + calendarName + ' machen?'));
+				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
+				var show			= $('<input />', {'type': 'button', 'value': 'Show'}).appendTo(buttonWrapper);
+				var edit			= $('<input />', {'type': 'button', 'value': 'Edit'}).appendTo(buttonWrapper);
+				var deleteBtn		= $('<input />', {'type': 'button', 'value': 'Delete'}).appendTo(buttonWrapper);
+				
+				show.click(function() {
+					_this.Appointment.show(appointmentId);
+				});
+				
+				edit.click(function() {
+					_this.Appointment.edit(appointmentId);
+				});
+
+				deleteBtn.click(function() {
+					_this.Series.deleteSer(appointmentId);
+				});
+				
+				content.push(buttonWrapper);
+				
+				_this.Overlay.show(title, content);
+			};
+
+			this.appointmentRud = function(appointmentId, appointmentName) {
+				var title	= 'Bitte wählen';
+				var content	= new Array();
+				
+				content.push($('<div />').text('Was möchten sie mit dem Termin ' + appointmentName + ' machen?'));
+				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
+				var show			= $('<input />', {'type': 'button', 'value': 'Show'}).appendTo(buttonWrapper);
+				var edit			= $('<input />', {'type': 'button', 'value': 'Edit'}).appendTo(buttonWrapper);
+				var deleteBtn		= $('<input />', {'type': 'button', 'value': 'Delete'}).appendTo(buttonWrapper);
+				
+				show.click(function() {
+					_this.Appointment.show(appointmentId);
+				});
+				
+				edit.click(function() {
+					_this.Appointment.edit(appointmentId);
+				});
+
+				deleteBtn.click(function() {
+					_this.Appointment.deleteApp(appointmentId);
+				});
+				
+				content.push(buttonWrapper);
+				
+				_this.Overlay.show(title, content);
+			};
 
 			this.calendarRud = function(calendarId, calendarName) {
 				var title	= 'Bitte wählen';
@@ -1077,272 +1008,13 @@ var cal = new function Calendar() {
 				content.push(buttonWrapper);
 				
 				_this.Overlay.show(title, content);
-			}
+			};
 		}
 		
 		/**
 		 * Dialog overlay functions.
 		 */
 		this.ShowDialogue = new _ShowDialogue;
-		
-		/**
-		 * Class for creating new content.
-		 */
-		function _Create() {
-			/**
-			 * Show the overlay for creating a new series.
-			 */
-			this.series = function() {
-				var callback = function(data) {
-					var title = 'Termin erstellen';
-					
-					var content = new Array();
-					
-					var now = new Date();
-					
-					var contentWrapper = $('<div />');
-					var frequency = $('<select />', {'id': 'calendar', 'class': 'cal_form_select'}).appendTo(contentWrapper);
-					$(data.calendar).each(function(index, cal) {
-						$('<option />', {'class': 'cal_form_select_option'}).appendTo(frequency).val(cal.id).text(cal.name);
-					});
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Name');
-					$('<input />', {'id': 'name', 'class': 'cal_form_input', 'type': 'text'}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Startzeit');
-					$('<input />', {'id': 'sTime', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(now, true, true)}).appendTo(contentWrapper);
-					$('<input />', {'id': 'sTimeHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(now, true, true, '/')}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Endzeit');
-					$('<input />', {'id': 'eTime', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(now, true, true)}).appendTo(contentWrapper);
-					$('<input />', {'id': 'eTimeHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(now, true, true, '/')}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Notizen');
-					$('<textarea />', {'id': 'notes', 'class': 'cal_form_input'}).appendTo(contentWrapper).val(data.notes);
-					var series = $('<input />', {'id': 'series', 'type': 'checkbox'}).appendTo(contentWrapper);
-					$('<span />', {'class': 'cal_form_checkbox_label'}).appendTo(contentWrapper).text('Serientermin erstellen');
-					var seriesWrapper = $('<div />', {'id': 'series_wrapper'}).appendTo(contentWrapper).css('display', 'none');
-					$('<label />', {'class': 'cal_form_label'}).appendTo(seriesWrapper).text('Erste Ausführung');
-					$('<input />', {'id': 'fOcc', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(now, true, false)}).appendTo(seriesWrapper);
-					$('<input />', {'id': 'fOccHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(now, true, false, '/')}).appendTo(seriesWrapper);
-					var endless = $('<input />', {'id': 'endless', 'type': 'checkbox'}).appendTo(seriesWrapper);
-					$('<span />', {'class': 'cal_form_checkbox_label'}).appendTo(seriesWrapper).text('Kein Enddatum');
-					var fOccWrapper = $('<div />', {'id': 'foc_Wrapper'}).appendTo(seriesWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(fOccWrapper).text('Letzte Ausführung');
-					$('<input />', {'id': 'lOcc', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(now, true, false)}).appendTo(fOccWrapper);
-					$('<input />', {'id': 'lOccHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(now, true, false, '/')}).appendTo(fOccWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(fOccWrapper).text('Wiederholungsrate');
-					var frequency = $('<select />', {'id': 'frequency', 'class': 'cal_form_select'}).appendTo(seriesWrapper);
-					$('<option />', {'class': 'cal_form_select_option'}).appendTo(frequency).val('daily').text('Täglich');
-					$('<option />', {'class': 'cal_form_select_option'}).appendTo(frequency).val('weekly').text('Wöchentlich');
-					
-					var buttonWrapper	= $('<div />', {'class': 'button_bar'});
-					var save			= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Erstellen'}).appendTo(buttonWrapper);
-					
-					content.push(contentWrapper);
-					content.push(buttonWrapper);
-					
-					series.click(function() {
-						if(!$('#series').data('checked')) {
-							$('#series_wrapper').css('display', '');
-							$('#series').data('checked', true);
-						} else {
-							$('#series_wrapper').css('display', 'none');
-							$('#series').data('checked', false);
-						}
-					});
-					
-					endless.click(function() {
-						if(!$('#endless').data('checked')) {
-							$('#foc_Wrapper').css('display', 'none');
-							$('#endless').data('checked', true);
-						} else {
-							$('#foc_Wrapper').css('display', '');
-							$('#endless').data('checked', false);
-						}
-					});
-					
-					save.click(function() {
-						_this.Series.create();
-					});
-					
-					var callback = function() {
-						$('#sTime').datetimepicker(_this.Helper.getDateTimePickerOptions({altField: '#sTimeHidden'}));
-						$('#eTime').datetimepicker(_this.Helper.getDateTimePickerOptions({altField: '#eTimeHidden'}));
-						$('#fOcc').datepicker(_this.Helper.getDateTimePickerOptions({altField: '#fOccHidden'}));
-						$('#lOcc').datepicker(_this.Helper.getDateTimePickerOptions({altField: '#lOccHidden'}));
-					};
-					
-					_this.Overlay.show(title, content, callback);
-				}
-				
-				_this.Cal.fetch(callback);
-			}
-		}
-		
-		/**
-		 * Create overlay functions.
-		 */
-		this.Create = new _Create;
-		
-		/**
-		 * Class for editing content.
-		 */
-		function _Edit() {
-			/**
-			 * Edit a reoccuring series.
-			 * 
-			 * @param	{int}	seriesId
-			 *   Id of the series to edit.
-			 */
-			this.series = function(seriesId) {
-				var callback = function(data) {
-					var title = 'Serie bearbeiten';
-					
-					var content = new Array();
-					
-					var contentWrapper = $('<div />');
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Name');
-					$('<input />', {'id': 'name', 'class': 'cal_form_input', 'type': 'text', 'value': data.name}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Startzeit');
-					$('<input />', {'id': 'sTime', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(new Date(data.starttime * 1000), true, true)}).appendTo(contentWrapper);
-					$('<input />', {'id': 'sTimeHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(new Date(data.starttime * 1000), true, true, '/')}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Endzeit');
-					$('<input />', {'id': 'eTime', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(new Date(data.endtime * 1000), true, true)}).appendTo(contentWrapper);
-					$('<input />', {'id': 'eTimeHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(new Date(data.endtime * 1000), true, true, '/')}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Notizen');
-					$('<textarea />', {'id': 'notes', 'class': 'cal_form_input'}).appendTo(contentWrapper).val(data.notes);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Erste Ausführung');
-					$('<input />', {'id': 'fOcc', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(new Date(data.first_occurence * 1000), true, false)}).appendTo(contentWrapper);
-					$('<input />', {'id': 'fOccHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(new Date(data.first_occurence * 1000), true, false, '/')}).appendTo(contentWrapper);
-					var endless = $('<input />', {'id': 'endless', 'type': 'checkbox'}).appendTo(contentWrapper);
-					$('<span />', {'class': 'cal_form_checkbox_label'}).appendTo(contentWrapper).text('Kein Enddatum');
-					var fOccWrapper = $('<div />', {'id': 'foc_Wrapper'}).appendTo(contentWrapper);
-					
-					if(data.last_occurence == null) {
-						endless.data('checked', true);
-						endless.attr('checked', true);
-						fOccWrapper.css('display', 'none');
-						data.last_occurence = (new Date()).getTime() / 1000;
-					}
-					
-					$('<label />', {'class': 'cal_form_label'}).appendTo(fOccWrapper).text('Letzte Ausführung');
-					$('<input />', {'id': 'lOcc', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(new Date(data.last_occurence * 1000), true, false)}).appendTo(fOccWrapper);
-					$('<input />', {'id': 'lOccHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(new Date(data.last_occurence * 1000), true, false, '/')}).appendTo(fOccWrapper);
-					
-					$('<label />', {'class': 'cal_form_label'}).appendTo(fOccWrapper).text('Wiederholungsrate');
-					var frequency = $('<select />', {'id': 'frequency', 'class': 'cal_form_select'}).appendTo(contentWrapper);
-					$('<option />', {'class': 'cal_form_select_option'}).appendTo(frequency).val('daily').text('Täglich');
-					$('<option />', {'class': 'cal_form_select_option'}).appendTo(frequency).val('weekly').text('Wöchentlich');
-					frequency.val(data.frequency);
-					
-					var buttonWrapper	= $('<div />', {'class': 'button_bar'});
-					var save			= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Aktualisieren'}).appendTo(buttonWrapper);
-					var deleteBtn		= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Löschen'}).appendTo(buttonWrapper);
-					
-					content.push(contentWrapper);
-					content.push(buttonWrapper);
-					
-					endless.click(function() {
-						if(!$('#endless').data('checked')) {
-							$('#foc_Wrapper').css('display', 'none');
-							$('#endless').data('checked', true);
-						} else {
-							$('#foc_Wrapper').css('display', '');
-							$('#endless').data('checked', false);
-						}
-					});
-					
-					save.click(function() {
-						var name	= $('#name').val();
-						var sTime	= new Date($('#sTimeHidden').val()).getTime() / 1000;
-						var eTime	= new Date($('#eTimeHidden').val()).getTime() / 1000;
-						var notes	= $('#notes').val();
-						var fOcc	= new Date($('#fOccHidden').val()).getTime() / 1000;
-						var lOcc	= null;
-						
-						if(!$('#endless').data('checked')) {
-							lOcc	= new Date($('#lOccHidden').val()).getTime() / 1000;
-						}
-						
-						var freq	= $('#frequency').val();
-						
-						_this.Series.update(data.id, name, sTime, eTime, notes, fOcc, lOcc, freq);
-					});
-					
-					deleteBtn.click(function() {
-						_this.Series.remove(data.id);
-					});
-					
-					var callback = function() {
-						$('#sTime').datetimepicker(_this.Helper.getDateTimePickerOptions({altField: '#sTimeHidden'}));
-						$('#eTime').datetimepicker(_this.Helper.getDateTimePickerOptions({altField: '#eTimeHidden'}));
-						$('#fOcc').datepicker(_this.Helper.getDateTimePickerOptions({altField: '#fOccHidden'}));
-						$('#lOcc').datepicker(_this.Helper.getDateTimePickerOptions({altField: '#lOccHidden'}));
-					};
-					
-					_this.Overlay.show(title, content, callback);
-				}
-				
-				_this.Series.fetch(seriesId, callback);
-			};
-			
-			/**
-			 * Edit a single date.
-			 * 
-			 * @param	{int}	dateId
-			 *   The id of the date to edit.
-			 */
-			this.singleDate = function(dateId) {
-				var callback = function(data) {
-					var title = 'Termin bearbeiten';
-					
-					var content = new Array();
-					
-					var contentWrapper = $('<div />');
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Name');
-					$('<input />', {'id': 'name', 'class': 'cal_form_input', 'type': 'text', 'value': data.name}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Startzeit');
-					$('<input />', {'id': 'sTime', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(new Date(data.starttime * 1000), true, true)}).appendTo(contentWrapper);
-					$('<input />', {'id': 'sTimeHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(new Date(data.starttime * 1000), true, true, '/')}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Endzeit');
-					$('<input />', {'id': 'eTime', 'type': 'text', 'class': 'cal_form_input', 'value': _this.Helper.getFormattedTime(new Date(data.endtime * 1000), true, true)}).appendTo(contentWrapper);
-					$('<input />', {'id': 'eTimeHidden', 'type': 'hidden', 'value': _this.Helper.getFormattedTime(new Date(data.endtime * 1000), true, true, '/')}).appendTo(contentWrapper);
-					$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Notizen');
-					$('<textarea />', {'id': 'notes', 'class': 'cal_form_input'}).appendTo(contentWrapper).val(data.notes);
-					
-					var buttonWrapper	= $('<div />', {'class': 'button_bar'});
-					var save			= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Aktualisieren'}).appendTo(buttonWrapper);
-					var deleteBtn		= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Löschen'}).appendTo(buttonWrapper);
-					
-					content.push(contentWrapper);
-					content.push(buttonWrapper);
-					
-					save.click(function() {
-						var name	= $('#name').val();
-						var sTime	= new Date($('#sTimeHidden').val()).getTime() / 1000;
-						var eTime	= new Date($('#eTimeHidden').val()).getTime() / 1000;
-						var notes	= $('#notes').val();
-						
-						_this.Series.update(data.id, name, sTime, eTime, notes, null, null, null);
-					});
-					
-					deleteBtn.click(function() {
-						_this.Series.remove(data.id);
-					});
-					
-					var callback = function() {
-						$('#sTime').datetimepicker(_this.Helper.getDateTimePickerOptions({altField: '#sTimeHidden'}));
-						$('#eTime').datetimepicker(_this.Helper.getDateTimePickerOptions({altField: '#eTimeHidden'}));
-					};
-					
-					_this.Overlay.show(title, content, callback);
-				}
-				
-				_this.Series.fetch(dateId, callback);
-			};
-		}
-		
-		/**
-		 * Edit overlay functions.
-		 */
-		this.Edit = new _Edit;
 	}
 	
 	/**
@@ -1508,9 +1180,9 @@ var cal = new function Calendar() {
 
 			var _addRudLink = function(item, appointmentId, isSeries) {
 				if(isSeries) {
-					item.click(function() { _this.Overlay.Edit.singleDate(seriesId); });
+					item.click(function() { _this.Overlay.ShowDialogue.seriesRud(appointmentId); });
 				} else {
-					item.click(function() { _this.Overlay.ShowDialogue.seriesOrException(seriesId, occurence); });
+					item.click(function() { _this.Overlay.ShowDialogue.appointmentRud(appointmentId); });
 				}
 			}
 			
@@ -1701,7 +1373,7 @@ var cal = new function Calendar() {
 						text		+= day + '.' + month + '.' + year;
 						var eTime = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate() + 1, 0, 0, 0);
 						
-						_this.Series.fetchAll(sTime, eTime, _updateWeek);
+						_this.Appointment.fetchAll(sTime, eTime, _updateWeek);
 					  break;
 					
 					case 'month':
@@ -1710,7 +1382,7 @@ var cal = new function Calendar() {
 						var sTime = new Date(selected.getFullYear(), selected.getMonth(), 1, 0, 0, 0);
 						var eTime = new Date(selected.getFullYear(), selected.getMonth() + 1, 1, 0, 0, 0);
 						
-						_this.Series.fetchAll(sTime, eTime, _updateMonth);
+						_this.Appointment.fetchAll(sTime, eTime, _updateMonth);
 					  break;
 					
 					case 'list':
@@ -1719,7 +1391,7 @@ var cal = new function Calendar() {
 						var sTime = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 0, 0, 0);
 						var eTime = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate() + 30, 0, 0, 0);
 						
-						_this.Series.fetchAll(sTime, eTime, _updateList);
+						_this.Appointment.fetchAll(sTime, eTime, _updateList);
 					  break;
 					
 					default:
@@ -1732,7 +1404,7 @@ var cal = new function Calendar() {
 						var sTime = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate(), 0, 0, 0);
 						var eTime = new Date(selected.getFullYear(), selected.getMonth(), selected.getDate() + 1, 0, 0, 0);
 						
-						_this.Series.fetchAll(sTime, eTime, _updateDay);
+						_this.Appointment.fetchAll(sTime, eTime, _updateDay);
 					  break;
 				}
 				

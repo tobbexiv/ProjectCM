@@ -167,7 +167,7 @@ def appointment_create(request):
 		json_response = json.dumps(response)
 		return HttpResponse(json_response, content_type="application/json")
 
-	return render(request, 'cal/appointment_form.html')
+	return render(request, 'cal/generic_form.html', {'form':form})
 
 @login_required
 def appointment_update(request, pk, template_name='cal/generic_form.html'):
@@ -187,7 +187,7 @@ def appointment_update(request, pk, template_name='cal/generic_form.html'):
 	
 
 @login_required
-def appointment_delete(request, pk, template_name='appointment_delete'):
+def appointment_delete(request, pk, template_name='cal/generic_delete.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
 	if request.method == "POST" and request.is_ajax:
 		appointment.delete()
@@ -202,7 +202,7 @@ def appointment_delete(request, pk, template_name='appointment_delete'):
 	return render(request, template_name, {'object':appointment})   
 
 @login_required
-def series_create(request, template_name='cal/series_create.html'):
+def series_create(request, template_name='cal/series_form.html'):
 	appointment_form = AppointmentForm(request.POST or None)
 	series_form = SeriesForm(request.POST or None)
 
@@ -228,7 +228,7 @@ def series_create(request, template_name='cal/series_create.html'):
 	return render(request, template_name, data)
 
 @login_required
-def series_delete(request, pk, template_name='cal/series_delete.html'):
+def series_delete(request, pk, template_name='cal/generic_delete.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
 	series = get_object_or_404(Series, pk=appointment.series)
 
@@ -243,11 +243,9 @@ def series_delete(request, pk, template_name='cal/series_delete.html'):
 		json_response = json.dumps(response)
 		return HttpResponse(json_response, content_type="application/json")
 
-	data = {}
-	data['appointment'] = appointment
-	data['series']  = series
+	data = str(appointment) + ' (' + str(series) + ')'
 
-	return render(request, template_name, data) 
+	return render(request, template_name, {'object':data}) 
 
 
 

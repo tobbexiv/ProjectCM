@@ -1,0 +1,8 @@
+<form method="post">
+	{% csrf_token %}
+	<b>Series data</b>
+    {{ series.as_p }}
+    <b>Appointment data</b>
+    {{ appointment.as_p }}
+    <input type="button" value="Save" id="save" /><input type="reset" value="Reset" id="reset" /><input type="button" value="Cancel" onclick="cal.Overlay.hide();" />
+</form>
