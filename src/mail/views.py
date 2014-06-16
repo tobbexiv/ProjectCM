@@ -16,7 +16,10 @@ from mail.serializer import AccountSerializer
 def mailaccount_list(request, template_name='mail/mailaccount_list.html'):
 	accounts = MailAccount.objects.filter(mail_account_owner=request.user)	
 
-	return render(request, template_name, {'account':accounts})
+	data = {}
+	data['object_list'] = accounts
+
+	return render(request, template_name, data)
 
 
 @login_required
