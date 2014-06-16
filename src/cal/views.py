@@ -257,7 +257,7 @@ def series_delete(request, pk, template_name='cal/series_delete.html'):
 def calshare_create(request, template_name='generic_form.html'):
 	user = request.user.username
 	form = CalShareForm(user=user)
-	if form.is_valid() and request.method == "GET": #and request.is_ajax:
+	if form.is_valid() and request.method == "POST" and request.is_ajax:
 		calshare = form.save()
 
 		response = {}
