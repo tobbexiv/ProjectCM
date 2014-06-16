@@ -1,5 +1,7 @@
 from django.conf.urls import patterns, include, url
 from django.contrib import admin
+from django.conf import settings
+from django.views.static import *
 
 
 
@@ -18,5 +20,6 @@ urlpatterns = patterns('',
 	url(r'^mail/', include('mail.urls')),
 	url(r'^calendar/', include('cal.urls')),
 	# url(r'^accounts/', include('registration.backends.default.urls')),
+	(r'^files/(?P<path>.*)$', 'django.views.static.serve', {'document_root': settings.MEDIA_ROOT}),
 )
 	

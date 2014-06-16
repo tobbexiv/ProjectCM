@@ -1,27 +1,46 @@
+{% load static %}
+{% get_media_prefix as STATIC_FILES %}
+
 <!DOCTYPE html>
 <html>
-    <head>
-        <title>{{ title }}</title>
-    </head>
-    <body>
-    	<div id="header">
-    		<div class="">{{ title }}</div>
-    		<div id="navbar">
-    			{% block navbar %}
-    				<ul>
-    					<li><span id="user">{{ request.user.username }}</span>&nbsp;<a id="logout" href="/accounts/logout">(Logout)</a></li>
-    					<li><a href="{% url 'accounts.views.account_show'  %}">Show Userdata</a></li>
-    					<li><a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a></li>
-    					<li><a href="{% url 'mail.views.mailaccount_list' %}">Mail Accounts</a></li>
-    					<li><a href="{% url 'mail.views.mailaccount_select' %}">Show Messages</a></li>
-    				</ul>
-    			{% endblock %}
-    		</div>
-    	</div>
-    	<div id="content">
-    		<div id="content_left">{% block content_left %}{% endblock %}</div>
-    		<div id="content_right">{% block content_right %}Welcome{% endblock %}</div>
-    	</div>
-    	<div id="footer">{% block footer %}Project CM - Software Engineering Project - Andreas Haberl - Tobias Engelmann - Tobias Seber{% endblock %}</div>
-    </body>
+	<head>
+		<title>ProjectCM - {{ title|default:"a software engineering project" }}</title>
+		<style type="text/css">
+			@import "{{ STATIC_FILES }}css/styles.css" screen;
+			{% block css_imports %}{% endblock %}
+		</style>
+		<script type="text/javascript" src="//ajax.googleapis.com/ajax/libs/jquery/2.1.1/jquery.min.js"></script>
+		<script type="text/javascript" src="{{ STATIC_FILES }}js/language_data.js"></script>
+		<script type="text/javascript" src="{{ STATIC_FILES }}js/forms.js"></script>
+	</head>
+	<body>
+		<div id="message_bar"></div>
+		<div id="wrapper">
+			<div id="header">
+				<div class="page_title">{{ title|default:"ProjectCM" }}</div>
+				<div id="navbar">
+					{% block menu %}
+						<ul>
+							<li class="menu_item_base"><span id="user">{{ request.user.username }}</span>&nbsp;<a id="logout" href="/accounts/logout">(Logout)</a></li>
+							<li class="menu_item"><a href="{% url 'accounts.views.account_show'  %}">Show Userdata</a></li>
+							<li class="menu_item"><a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a></li>
+							<li class="menu_item"><a href="{% url 'mail.views.mailaccount_list' %}">Mail Accounts</a></li>
+							<li class="menu_item"><a href="{% url 'mail.views.mailaccount_select' %}">Show Messages</a></li>
+						</ul>
+					{% endblock %}
+				</div>
+			</div>
+			<div id="content">
+				<div id="content_left">{% block content_left %}{% endblock %}</div>
+				<div id="content_right">
+					<div class="top">
+						<span id="info_line">{% block info_line %}{% endblock %}</span>
+						<div class="submenu">{% block submenu %}{% endblock %}</div>
+					</div>
+					<div class="bottom">{% block content_right %}Welcome{% endblock %}</div>
+				</div>
+			</div>
+			<div id="footer">{% block footer %}ProjectCM - Software Engineering Project - Andreas Haberl - Tobias Engelmann - Tobias Seber{% endblock %}</div>
+		</div>
+	</body>
 </html>
