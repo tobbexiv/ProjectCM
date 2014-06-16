@@ -19,11 +19,13 @@ class DateTimeEncoder(json.JSONEncoder):
 
 		if obj.calendar != '':
 			ret = {}
-			ret['calendar'] = obj.calendar.id
-			ret['title'] = obj.title
-			ret['description'] = obj.description
-			ret['start_date'] = obj.start_date
-			ret['end_date'] = obj.end_date
+			ret['appointment_id'] = obj.id
+			ret['series'] = obj.series
+			ret['color'] = obj.calendar.color
+			ret['name'] = obj.title
+			ret['notes'] = obj.description
+			ret['starttime'] = obj.start_date
+			ret['endtime'] = obj.end_date
 			
 			return ret      
 
