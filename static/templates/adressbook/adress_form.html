@@ -4,6 +4,6 @@
 <form method="post">
 	{% csrf_token %}
     {{ form.as_p }}
-    <input type="submit" value="save" id="save"/><a href="{% url 'adress_list' %}">cancel</a>
+    <input type="submit" value="Save" id="save" /><input type="reset" value="Reset" id="reset" /><a href="{% url 'adress_list' %}" class="cancel"><input type="button" value="Cancel" /></a>
 </form>
 {% endblock %}
