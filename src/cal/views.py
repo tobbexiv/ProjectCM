@@ -94,52 +94,57 @@ def calendar_delete(request, pk, template_name='cal/calendar_delete.html'):
 def appointment_list(request):
 	if request.method == "POST" and request.is_ajax: #"GET": 
 		json_data = json.loads(request.body.decode('utf-8'))
-		#now = datetime.utcnow().replace(tzinfo=utc)
-		from_date = dateparser.parse(json_data['fetch_after_date'])#now - timedelta(days=7) #
-		to_date = dateparser.parse(json_data['fetch_before_date'])#now + timedelta(days=7) #
-		calendar_list = Calendar.objects.filter(calendar_owner=request.user) #json_data['calendar']
+		# now = datetime.utcnow().replace(tzinfo=utc)
+		from_date = dateparser.parse(json_data['fetch_after_date'])
+		to_date = dateparser.parse(json_data['fetch_before_date'])
+
+		# from_date = now - timedelta(days=1)
+		# to_date = now + timedelta(days=1)
+
+		calendar_list = Calendar.objects.filter(calendar_owner=request.user) 
 		
 		ser = CalSerializer()
 		all_appointments = []
 
 		for calendar in calendar_list:
-			appointments = Appointment.objects.filter(calendar=calendar, series=None, start_date__lte=to_date, end_date__gte=from_date)
+			appointments = Appointment.objects.filter(calendar=calendar, start_date__lte=to_date, end_date__gte=from_date)			
 			for appo in appointments:
-				all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))  
 
+				if not appo.series:
+					
+					all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))  
+				else:	
+			# series = Appointment.objects.filter(calendar=calendar, series=None, start_date__lte=to_date, end_date__gte=from_date)
+			# series = Series.objects.filter(first_occurence__lte=to_date, last_occurence__gte=to_date)
+								
+					all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))
+					day1 = (from_date - timedelta(days=from_date.weekday()))
+					day2 = (to_date - timedelta(days=to_date.weekday()))
 
-			series = Series.objects.filter(first_occurence__lte=to_date, last_occurence__gte=to_date)
+					if appo.series.reoccurences == 'daily':
+						days_between = int((day2 - day1).days)
+
+						if days_between != 0:			
+							for i in range(1, days_between):
+								new_start_date = appo.start_date + timedelta(days=1*i)
+								new_end_date = appo.end_date + timedelta(days=1*i)
+								new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date)
+								
+								all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 			
-			for occ in series:
-				ser_apps = Appointment.objects.get(series=occ)
-				all_appointments.append(json.dumps(ser_apps, cls=DateTimeEncoder))
-				day1 = (from_date - timedelta(days=from_date.weekday()))
-				day2 = (to_date - timedelta(days=to_date.weekday()))
-
-				if occ.reoccurences == 'daily':
-					days_between = int((day2 - day1).days)
-					
-					for i in range(1, days_between):
-						new_start_date = ser_apps.start_date + timedelta(days=1*i)
-						new_end_date = ser_apps.end_date + timedelta(days=1*i)
-						new_app = Appointment(calendar=calendar, title=ser_apps.title, description=ser_apps.description, start_date=new_start_date, end_date=new_end_date)
+					elif appo.series.reoccurences == 'weekly':
+						weeks_between = int((day2 - day1).days / 7)
 						
-						all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
-		
-				elif occ.reoccurences == 'weekly':
-					weeks_between = int((day2 - day1).days / 7)
-					
-					for i in range(1, weeks_between):
-						new_start_date = ser_apps.start_date + timedelta(days=7*i) 
-						new_end_date = ser_apps.end_date + timedelta(days=7*i)
-						new_app = Appointment(calendar=calendar, title=ser_apps.title, description=ser_apps.description, start_date=new_start_date, end_date=new_end_date)
+						for i in range(1, weeks_between):
+							new_start_date = appo.start_date + timedelta(days=7*i) 
+							new_end_date = appo.end_date + timedelta(days=7*i)
+							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date)
 
-						all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
-
+							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
+							
 						
-					
-				elif occ.reoccurences == 'monthly':
-					pass        
+					elif appo.series.reoccurences == 'monthly':
+						pass        
 
 
 
