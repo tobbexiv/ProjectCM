@@ -203,3 +203,4 @@ def message_send(request):
 		smtp_helper.send_message(mail)
 
 		return HttpResponse("message send")	
+

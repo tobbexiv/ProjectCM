@@ -11,4 +11,5 @@ urlpatterns = patterns('',
 	url(r'^appointment/create/?$', 'cal.views.appointment_create', name='appointment_create'),
 	url(r'^appointment/update/(P<pk>\+)$', 'cal.views.appointment_update', name='appointment_update'),
 	url(r'^appointment/delete/(P<pk>\+)$', 'cal.views.appointment_delete', name='appointment_delete'),
+	url(r'^calshare/create/?$', 'cal.views.calshare_create', name='calshare_create'),
 )

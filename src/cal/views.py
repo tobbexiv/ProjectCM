@@ -4,8 +4,8 @@ from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core import serializers
 import json
-from cal.models import Calendar, Appointment, Series
-from cal.forms import CalendarForm, AppointmentForm, SeriesForm
+from cal.models import Calendar, Appointment, Series, CalendarShare
+from cal.forms import CalendarForm, AppointmentForm, SeriesForm, CalShareForm
 from django.http import HttpResponse
 from cal.serializer import CalSerializer, DateTimeEncoder
 from django.core.serializers.json import DjangoJSONEncoder 
@@ -60,11 +60,11 @@ def calendar_create(request):
 
 @login_required
 def calendar_update(request, pk, template_name='generic_form.html'):
-        calendar = get_object_or_404(Calendar, pk=pk)
-        form = CalendarForm(request.POST or None, instance=calendar)
-        if form.is_valid() and request.method == "POST" and request.is_ajax:
-                form.save()
-                response = {}
+		calendar = get_object_or_404(Calendar, pk=pk)
+		form = CalendarForm(request.POST or None, instance=calendar)
+		if form.is_valid() and request.method == "POST" and request.is_ajax:
+				form.save()
+				response = {}
 				response['userName'] = request.user.username
 				response['success'] = True
 				response['data'] = 'Calendar successfully updated'
@@ -72,14 +72,14 @@ def calendar_update(request, pk, template_name='generic_form.html'):
 				json_response = json.dumps(response)
 				return HttpResponse(json_response, content_type="application/json")
 
-        return render(request, template_name, {'form':form})
+		return render(request, template_name, {'form':form})
 
 @login_required
 def calendar_delete(request, pk, template_name='cal/calendar_delete.html'):
-        calendar = get_object_or_404(Calendar, pk=pk)
-        if request.method=='POST' and request.is_ajax:
-                calendar.delete()
-                response = {}
+		calendar = get_object_or_404(Calendar, pk=pk)
+		if request.method=='POST' and request.is_ajax:
+				calendar.delete()
+				response = {}
 				response['userName'] = request.user.username
 				response['success'] = True
 				response['data'] = 'Calendar successfully deleted'
@@ -87,7 +87,7 @@ def calendar_delete(request, pk, template_name='cal/calendar_delete.html'):
 				json_response = json.dumps(response)
 				return HttpResponse(json_response, content_type="application/json")
 
-        return render(request, template_name, {'object':calendar})
+		return render(request, template_name, {'object':calendar})
 
 
 @login_required
@@ -105,7 +105,7 @@ def appointment_list(request):
 		for calendar in calendar_list:
 			appointments = Appointment.objects.filter(calendar=calendar, series=None, start_date__lte=to_date, end_date__gte=from_date)
 			for appo in appointments:
-				all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))	
+				all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))  
 
 
 			series = Series.objects.filter(first_occurence__lte=to_date, last_occurence__gte=to_date)
@@ -139,7 +139,7 @@ def appointment_list(request):
 						
 					
 				elif occ.reoccurences == 'monthly':
-					pass		
+					pass        
 
 
 
@@ -200,7 +200,7 @@ def appointment_delete(request, pk, template_name='appointment_delete'):
 		json_response = json.dumps(response)
 		return HttpResponse(json_response, content_type="application/json")
 
-	return render(request, template_name, {'object':appointment})	
+	return render(request, template_name, {'object':appointment})   
 
 @login_required
 def series_create(request, template_name='cal/series_create.html'):
@@ -246,12 +246,26 @@ def series_delete(request, pk, template_name='cal/series_delete.html'):
 
 	data = {}
 	data['appointment'] = appointment
-	data['series']	= series
+	data['series']  = series
 
-	return render(request, template_name, data)	
-
-
+	return render(request, template_name, data) 
 
 
 
+
+@login_required
+def calshare_create(request, template_name='adressbook/adress_form.html'):
+	form = CalShareForm(request.POST or None, initial={'user':request.user})
+	if form.is_valid() and request.method == "GET": #and request.is_ajax:
+		calshare = form.save()
+
+		response = {}
+		response['userName'] = request.user.username
+		response['success'] = True
+		response['data'] = 'Calendar Share successfully created'
+
+		json_response = json.dumps(response)
+		return HttpResponse(json_response, content_type="application/json")
+
+	return render(request, template_name)
 
