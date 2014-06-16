@@ -386,7 +386,7 @@ var cal = new function Calendar() {
 			var title	= 'Kalender anzeigen';
 
 			var callback = function(parent) {
-				_this.Helper.getForm('/calendar/show/' + calendarId, parent, function() {
+				_this.Helper.getForm('/calendar/view/' + calendarId, parent, function() {
 					setTimeout(_this.Cal.fetch, 500);
 				});
 			}
@@ -429,10 +429,10 @@ var cal = new function Calendar() {
 		 *   The id of the permission level.
 		 */
 		this.grantPermission = function(calendarId) {
-			var title	= 'Kalender löschen';
+			var title	= 'Kalenderrechte Vergeben';
 
 			var callback = function(parent) {
-				_this.Helper.getForm('/calendar/calshare/create/' + calendarId, parent, function() {
+				_this.Helper.getForm('/calendar/calshare/create/', parent, function() {
 					setTimeout(_this.Cal.fetch, 500);
 				});
 			}

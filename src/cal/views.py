@@ -32,7 +32,7 @@ def calendar_list(request, template_name='cal/calendar_list.html'):
 	return HttpResponse(json_response, content_type="application/json")
 
 @login_required
-def calendar_view(request, template_name='cal/calendar_view.html'):
+def calendar_view(request, pk, template_name='cal/calendar_view.html'):
 	calendar = get_object_or_404(Calendar, pk=pk)
 	
 	return render(request, template_name, {'calendar':calendar})
@@ -59,7 +59,7 @@ def calendar_create(request):
 
 
 @login_required
-def calendar_update(request, pk, template_name='generic_form.html'):
+def calendar_update(request, pk, template_name='cal/generic_form.html'):
 		calendar = get_object_or_404(Calendar, pk=pk)
 		form = CalendarForm(request.POST or None, instance=calendar)
 		if form.is_valid() and request.method == "POST" and request.is_ajax:
@@ -171,7 +171,7 @@ def appointment_create(request):
 	return render(request, 'cal/appointment_form.html')
 
 @login_required
-def appointment_update(request, pk, template_name='generic_form.html'):
+def appointment_update(request, pk, template_name='cal/generic_form.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
 	form = AppointmentForm(rquest.POST or None, instance=appointment)
 	if form.is_valid() and request.method == "POST" and request.is_ajax:
@@ -254,7 +254,7 @@ def series_delete(request, pk, template_name='cal/series_delete.html'):
 
 
 @login_required
-def calshare_create(request, template_name='generic_form.html'):
+def calshare_create(request, template_name='cal/generic_form.html'):
 	user = request.user.username
 	form = CalShareForm(user=user)
 	if form.is_valid() and request.method == "POST" and request.is_ajax:

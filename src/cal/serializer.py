@@ -17,10 +17,10 @@ class DateTimeEncoder(json.JSONEncoder):
 		if isinstance(obj, datetime.datetime):
 			return int(mktime(obj.timetuple()))
 
-		if obj.calendar != '':
+		if hasattr(obj, 'calendar'):
 			ret = {}
 			ret['appointment_id'] = obj.id
-			ret['series'] = obj.series
+			ret['series'] = obj.series != None
 			ret['color'] = obj.calendar.color
 			ret['name'] = obj.title
 			ret['notes'] = obj.description
