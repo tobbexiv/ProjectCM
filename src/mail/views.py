@@ -2,22 +2,25 @@ from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
 from django.core import serializers
 
-
 from django.http import HttpResponse
 from mail.imap_helper import ImapHelper
+from mail.smtp_helper import SmtpHelper
 from django.forms.models import model_to_dict
-
+import json
 from mail.models import MailAccount, MailHost, Message, MailBox
 from mail.forms import MailAccountForm, MailHostForm
+
+from mail.serializer import AccountSerializer 
 
 @login_required
 def mailaccount_list(request, template_name='mail/mailaccount_list.html'):
 	accounts = MailAccount.objects.filter(mail_account_owner=request.user)	
-	data = {}
-	data['title'] = "Mail Accounts"
-	data['object_list'] = accounts
 
-	return render(request, template_name, data)
+	json_data = []
+	for acc in accounts:
+		json_data.append(json.dumps(acc, cls=AccountSerializer))
+
+	return HttpResponse(json_data, content_type="application/json")
 
 
 @login_required
@@ -176,3 +179,27 @@ def message_view(request, pk, template_name='message_view.html'):
 	data['message'] = message 
 
 	return render(request, template_name, data)
+
+
+@login_required
+def message_send(request):
+	if request.method == "POST" and request.is_ajax: 
+		json_data = json.loads(request.body.decode('utf-8'))
+		account_id = json_data['account']
+		recipient = json_data['recipient']
+		body = json_data['body']
+
+		account_data = MailAccount.objects.get(pk=account_id)
+		smtp_helper = SmtpHelper(account_data)
+		sender = account_data.email
+
+		message = {}
+		mail['sender'] = sender
+		mail['destination'] = recipient
+		msg = ("From: %s\r\nTo: %s\r\n\r\n"
+       % (fromaddr, ", ".join(toaddrs.split())))
+		mail['body'] = msg + body
+
+		smtp_helper.send_message(mail)
+
+		return HttpResponse("message send")	
