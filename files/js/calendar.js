@@ -469,6 +469,30 @@ var cal = new function Calendar() {
 			
 			_this.Overlay.show(title, null, callback);
 		};
+
+		this.show = function(appointmentId) {
+			var title	= 'Serientermin anzeigen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/series/view/' + appointmentId, parent, function() {
+					setTimeout(_this.View.show, 500);
+				});
+			}
+			
+			_this.Overlay.show(title, null, callback);
+		};
+
+		this.edit = function(appointmentId) {
+			var title	= 'Serientermin bearbeiten';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/series/update/' + appointmentId, parent, function() {
+					setTimeout(_this.View.show, 500);
+				});
+			}
+			
+			_this.Overlay.show(title, null, callback);
+		};
 		
 		/**
 		 * Delete an appointment (series).
@@ -721,6 +745,8 @@ var cal = new function Calendar() {
 			
 			if(iter.getDay() == 1) {
 				iter.setDate(iter.getDate() - 7);
+			} else if(iter.getDay() == 0) {
+				iter.setDate(iter.getDate() - 6);
 			} else {
 				iter.setDate(iter.getDate() - iter.getDay() + 1);
 			}
@@ -928,18 +954,18 @@ var cal = new function Calendar() {
 				var title	= 'Bitte wählen';
 				var content	= new Array();
 				
-				content.push($('<div />').text('Was möchten sie mit der Serie ' + calendarName + ' machen?'));
+				content.push($('<div />').text('Was möchten sie mit der Serie ' + appointmentName + ' machen?'));
 				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
 				var show			= $('<input />', {'type': 'button', 'value': 'Show'}).appendTo(buttonWrapper);
 				var edit			= $('<input />', {'type': 'button', 'value': 'Edit'}).appendTo(buttonWrapper);
 				var deleteBtn		= $('<input />', {'type': 'button', 'value': 'Delete'}).appendTo(buttonWrapper);
 				
 				show.click(function() {
-					_this.Appointment.show(appointmentId);
+					_this.Series.show(appointmentId);
 				});
 				
 				edit.click(function() {
-					_this.Appointment.edit(appointmentId);
+					_this.Series.edit(appointmentId);
 				});
 
 				deleteBtn.click(function() {
@@ -1178,11 +1204,11 @@ var cal = new function Calendar() {
 				return dates;
 			};
 
-			var _addRudLink = function(item, appointmentId, isSeries) {
+			var _addRudLink = function(item, appointmentId, appointmentName, isSeries) {
 				if(isSeries) {
-					item.click(function() { _this.Overlay.ShowDialogue.seriesRud(appointmentId); });
+					item.click(function() { _this.Overlay.ShowDialogue.seriesRud(appointmentId, appointmentName); });
 				} else {
-					item.click(function() { _this.Overlay.ShowDialogue.appointmentRud(appointmentId); });
+					item.click(function() { _this.Overlay.ShowDialogue.appointmentRud(appointmentId, appointmentName); });
 				}
 			}
 			
@@ -1222,7 +1248,7 @@ var cal = new function Calendar() {
 						var dateItem = $('<div />', {'class': 'calendar_appointment shadow_outer'}).appendTo(wrapper).html(marker + name + notes);
 						dateItem.css({'top': top + 'px', 'height': height + 'px'});7
 						
-						_addRudLink(dateItem, date.appointment_id, date.series);
+						_addRudLink(dateItem, date.appointment_id, date.name, date.series);
 					});
 				}
 			};
@@ -1277,7 +1303,7 @@ var cal = new function Calendar() {
 							var dateItem = $('<div />', {'class': 'calendar_appointment shadow_outer'}).appendTo(wrapper).html(marker + name + notes);
 							dateItem.css({'top': top + 'px', 'height': height + 'px'});
 							
-							_addRudLink(dateItem, date.appointment_id, date.series);
+							_addRudLink(dateItem, date.appointment_id, date.name, date.series);
 						});
 					}
 				}
@@ -1314,7 +1340,7 @@ var cal = new function Calendar() {
 						
 						var dateItem = $('<div />', {'class': 'month_item_content_date', 'title': notes}).appendTo(box).html(marker + time + name);
 						
-						_addRudLink(dateItem, date.appointment_id, date.series);
+						_addRudLink(dateItem, date.appointment_id, date.name, date.series);
 					});
 				}
 			};
@@ -1342,7 +1368,7 @@ var cal = new function Calendar() {
 
 					var dateDiv = $('<div />', {'class': 'calendar_list_item'}).appendTo(listContent).html(marker + time + name + notes);
 					
-					_addRudLink(dateDiv, date.appointment_id, date.series);
+					_addRudLink(dateDiv, date.appointment_id, date.name, date.series);
 				});
 			};
 			
