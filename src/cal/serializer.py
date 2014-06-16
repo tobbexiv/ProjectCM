@@ -19,7 +19,7 @@ class DateTimeEncoder(json.JSONEncoder):
 
 		if hasattr(obj, 'calendar'):
 			ret = {}
-			ret['appointment_id'] = obj.id
+			ret['appointment_id'] = obj.pk
 			ret['series'] = obj.series != None
 			ret['color'] = obj.calendar.color
 			ret['name'] = obj.title
