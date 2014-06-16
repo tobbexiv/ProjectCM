@@ -8,6 +8,6 @@
     {{ send_host.as_p }}
     <b>Retrieve Host</b>
     {{ retrieve_host.as_p }}
-    <input type="submit" value="save" id="save"/><a href="{% url 'mailaccount_list' %}">cancel</a>
+    <input type="submit" value="Save" id="save" /><input type="reset" value="Reset" id="reset" /><a href="{% url 'mailaccount_list' %}" class="cancel"><input type="button" value="Cancel" /></a>
 </form>
 {% endblock %}
