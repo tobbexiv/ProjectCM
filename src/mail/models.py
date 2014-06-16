@@ -35,8 +35,6 @@ class MailBox(models.Model):
 		return self.name
 
 
-
-
 class Message(models.Model):
 	mail_box = models.ForeignKey(MailBox)
 	sender = models.CharField(max_length=60, null=False, blank=False)

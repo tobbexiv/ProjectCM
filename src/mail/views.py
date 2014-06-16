@@ -158,7 +158,7 @@ def message_list(request, pk, template_name='message_list.html'):
 	messages = imap_helper.load_mail_from_mailbox()
 
 	for message in messages:		
-		check = Message.objects.filter(identifier=message['identifier'], mail_box=mb)
+		check = Message.objects.filter(identifier=message['identifier'], mail_box=mb.id)
 		
 		if not check:
 			m = Message(mail_box=mb, sender=message['sender'], subject=message['subject'], identifier=message['identifier'], mail_source=message['source'])
