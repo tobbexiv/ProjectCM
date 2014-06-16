@@ -48,7 +48,7 @@ def calendar_create(request):
 
 		return HttpResponse("data saved")
 
-	return render(request, 'cal/calendar_form.html', {'form':form})
+	return render(request, 'cal/generic_form.html', {'form':form})
 	
 
 

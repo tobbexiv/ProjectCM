@@ -195,7 +195,7 @@ var cal = new function Calendar() {
 			}
 			
 			if(!callback.success) {
-				callback.success = function(data) { return false; };
+				callback.success = function() { return false; };
 			}
 			
 			if(!callback.fail) {
@@ -203,9 +203,13 @@ var cal = new function Calendar() {
 			}
 			
 			var callbackSucces = function(data) {
-				var parsed = JSON.parse(data);
+				var parsed = data;
+
+				if(typeof data === "string") {
+					parsed = JSON.parse(data);
+				}
 				
-				this.updateUserName(parsed.userName);
+				_this.Helper.updateUserName(parsed.userName);
 
 				if(parsed.success) {
 					callback.success(parsed.data);
@@ -237,6 +241,79 @@ var cal = new function Calendar() {
 				cache:		 'false',
 				timeout:	 10000
 			});
+			
+			request.done(callbackSucces);
+			request.fail(callbackFail);
+		};
+
+		var _showForm = function(urlToCall, parent, formData, callbackSuccess) {
+			if(/id="login_form"/.test(formData)) {
+				location.href = '/';
+			}
+
+			parent.html(formData);
+			$('#save').click(function() {
+				_this.Helper.sendForm(urlToCall, this, parent, callbackSuccess);
+			});
+		}
+
+		this.getForm = function(urlToCall, parent, callbackSuccess) {
+			var callbackSucces = function(data) {
+				_showForm(urlToCall, parent, data, callbackSuccess);
+			};
+			
+			var callbackFail = function() {
+				_this.Helper.showHint('Die Anfrage an den Server ist fehlgeschlagen.', 'error');
+				callback.fail();
+			};
+			
+			$.ajaxSetup({
+				beforeSend: function(xhr, settings) {
+					xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+				}
+			});
+			
+			var request = $.ajax({
+				url: 		 urlToCall,
+				type: 		 'GET',
+				cache:		 'false',
+				timeout:	 10000
+			});
+			
+			request.done(callbackSucces);
+			request.fail(callbackFail);
+		};
+
+		this.sendForm = function(urlToCall, submit_button, parentElement, callbackSuccess) {
+			var data = $(submit_button).parent('form').serialize();
+			
+			var callbackSucces = function(data) {
+				if(/<form method="post">/.test(data)) {
+					_showForm(urlToCall, parentElement, data);
+					return false;
+				}
+
+				_this.Overlay.hide();
+				if(callbackSuccess) {
+					callbackSuccess();
+				}
+				var parsedData = JSON.parse(data);
+				_this.Helper.updateUserName(parsedData.userName);
+				_this.Helper.showHint(parsedData.data, parsedData.success == true ? 'success' : 'error');
+
+			};
+			
+			var callbackFail = function() {
+				_this.Helper.showHint('Die Anfrage an den Server ist fehlgeschlagen.', 'error');
+			};
+			
+			$.ajaxSetup({
+				beforeSend: function(xhr, settings) {
+					xhr.setRequestHeader("X-CSRFToken", $.cookie('csrftoken'));
+				}
+			});
+			
+			var request = $.post(urlToCall, data);
 			
 			request.done(callbackSucces);
 			request.fail(callbackFail);
@@ -277,10 +354,10 @@ var cal = new function Calendar() {
 						var row = $('<tr />', {'class': 'calendar_list_row'}).appendTo(wrapper);
 						$('<td />', {'class': 'calendar_color_hint'}).appendTo(row).css('background-color', '#' + calendar.color);
 						$('<td />', {'class': 'calendar_item', 'title': calendar.description}).appendTo(row).text(calendar.name);
-						// row.click(function() { _this.Overlay.Edit.setCalendarPermission(cal.id) });
+						row.click(function() { _this.Overlay.ShowDialogue.calendarRud(calendar.id, calendar.name) });
 					});
 					
-					$('#calendar_list_wrapper').empty().append(wrapper);
+					$('#calendar_list_box').empty().append(wrapper);
 					
 					if(callback) {
 						callback(data);
@@ -292,33 +369,53 @@ var cal = new function Calendar() {
 			
 			_this.Helper.getJsonData('/calendar/list/', _request, _callback);
 		};
-		
-		/**
-		 * Create a new calendar.
-		 * 
-		 * @param	{string}	name
-		 *   The calendar name.
-		 * @param	{string}	desc
-		 *   Description of the calendar.
-		 * @param	{string}	color
-		 *   Color in hex format (e.g. FF00FF)
-		 */
-		this.create = function(name, desc, color) {
-			var _callback = {
-				success:	function(data) {
-					_this.Helper.showHint('Kalender erfolgreich erstellt.', 'success');
-					$('#overlay_panel_close').click();
+
+		this.create = function() {
+			var title	= 'Kalender anlegen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/new/', parent, function() {
 					setTimeout(_this.Cal.fetch, 500);
-				}
+				});
 			}
 			
-			var _request = {
-				name:			name,
-				description:	desc,
-				color:			color
-			};
+			_this.Overlay.show(title, null, callback);
+		};
+
+		this.show = function(calendarId) {
+			var title	= 'Kalender anzeigen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/show/' + calendarId, parent, function() {
+					setTimeout(_this.Cal.fetch, 500);
+				});
+			}
 			
-			_this.Helper.getJsonData('/calendar/new/', _request, _callback);
+			_this.Overlay.show(title, null, callback);
+		};
+
+		this.edit = function(calendarId) {
+			var title	= 'Kalender bearbeiten';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/edit/' + calendarId, parent, function() {
+					setTimeout(_this.Cal.fetch, 500);
+				});
+			}
+			
+			_this.Overlay.show(title, null, callback);
+		};
+
+		this.deleteCal = function(calendarId) {
+			var title	= 'Kalender löschen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/delete/' + calendarId, parent, function() {
+					setTimeout(_this.Cal.fetch, 500);
+				});
+			}
+			
+			_this.Overlay.show(title, null, callback);
 		};
 		
 		/**
@@ -331,21 +428,16 @@ var cal = new function Calendar() {
 		 * @param	{int}		permId
 		 *   The id of the permission level.
 		 */
-		this.grantPermission = function(calId, email, permId) {
-			var _callback = {
-				success:	function(data) {
-					_this.Helper.showHint('Rechte erfolgreich gesetzt.', 'success');
-					$('#overlay_panel_close').click();
-				}
+		this.grantPermission = function(calendarId) {
+			var title	= 'Kalender löschen';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/calshare/create/' + calendarId, parent, function() {
+					setTimeout(_this.Cal.fetch, 500);
+				});
 			}
 			
-			var _request = {
-				calendar_id:	calId,
-				email:			email,
-				permission_id:	permId
-			};
-			
-			_this.Helper.getJsonData('grantCalendarPermission', _request, _callback);
+			_this.Overlay.show(title, null, callback);
 		};
 	}
 	
@@ -371,6 +463,10 @@ var cal = new function Calendar() {
 		this.fetchAll = function(fetchAfterDate, fetchBeforeDate, callback) {
 			var _callback = {
 				success:	function(data) {
+					for(var i = 0; i < data.length; i++) {
+						data[i] = JSON.parse(data[i]);
+					}
+
 					callback(data);
 				}
 			}
@@ -772,18 +868,18 @@ var cal = new function Calendar() {
 		 * Create the little calendar.
 		 */
 		this.create = function() {
-			var calTable = $('<table />', {'id': 'cal_mini_table', 'cellspacing': 2, 'cellpadding': 2});
+			var calendarTable = $('<table />', {'id': 'small_calendar_body', 'cellspacing': 2, 'cellpadding': 2});
 			var monthDays = this.getMonthDays(_show.month, _show.year);
 			var tableRow;
 			
 			for(var i = 0; i < monthDays.length; i++) {
 				if(i % 7 == 0) {
-					tableRow = $('<tr />').appendTo(calTable);
+					tableRow = $('<tr />').appendTo(calendarTable);
 				}
 				
-				var itemClass = 'cal_mini_item';
-				itemClass += !monthDays[i].active ? ' cal_mini_item_inactive' : '';
-				itemClass += monthDays[i].selected ? ' cal_mini_item_selected' : '';
+				var itemClass = 'small_calendar_item';
+				itemClass += !monthDays[i].active ? ' inactive' : '';
+				itemClass += monthDays[i].selected ? ' selected' : '';
 				
 				var onclick = 'cal.SmallCal.setDate(' + monthDays[i].year + ', ' + monthDays[i].month + ', ' + monthDays[i].nr + ', true)';
 				
@@ -793,9 +889,9 @@ var cal = new function Calendar() {
 			var headHtml = '<span class="pointer" style="float:left;" onclick="cal.SmallCal.prevMonth();">&lt;</span>';
 			headHtml += _monthNames[_show.month] + ' ' + _show.year;
 			headHtml += '<span class="pointer" style="float:right;" onclick="cal.SmallCal.nextMonth();">&gt;</span>';
-			
-			$('#cal_mini_header').html(headHtml);
-			$('#cal_mini_table_box').empty().append(calTable);
+			var calendarHead = $('<div />', {'id': 'small_calendar_head'}).html(headHtml);
+
+			$('#small_calendar_wrapper').empty().append(calendarHead).append(calendarTable);
 		};
 		
 		/**
@@ -897,15 +993,24 @@ var cal = new function Calendar() {
 			}
 			
 			$('#overlay_panel_title').empty().text(title);
-			$('#overlay_panel_content').empty().append(content);
-			
-			if(!callback) {
-				callback = function() { return false; };
+			$('#overlay_panel_content').empty();
+
+			if(content) {
+				$('#overlay_panel_content').append(content);
 			}
 			
-			callback();
+			if(callback) {
+				callback($('#overlay_panel_content'));
+			}
 			
 			$('#overlay_wrapper').fadeIn(_this.Helper.getAnimationDuration());
+		};
+
+		/**
+		 * Hide the overlay.
+		 */
+		this.hide = function() {
+			$('#overlay_panel_close').click();
 		};
 		
 		/**
@@ -935,6 +1040,38 @@ var cal = new function Calendar() {
 				
 				exception.click(function() {
 					_this.Exception.fetch(seriesId, occurence);
+				});
+				
+				content.push(buttonWrapper);
+				
+				_this.Overlay.show(title, content);
+			}
+
+			this.calendarRud = function(calendarId, calendarName) {
+				var title	= 'Bitte wählen';
+				var content	= new Array();
+				
+				content.push($('<div />').text('Was möchten sie mit Kalender ' + calendarName + ' machen?'));
+				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
+				var show			= $('<input />', {'type': 'button', 'value': 'Show'}).appendTo(buttonWrapper);
+				var edit			= $('<input />', {'type': 'button', 'value': 'Edit'}).appendTo(buttonWrapper);
+				var deleteBtn		= $('<input />', {'type': 'button', 'value': 'Delete'}).appendTo(buttonWrapper);
+				var permissions		= $('<input />', {'type': 'button', 'value': 'Grant permissions'}).appendTo(buttonWrapper);
+				
+				show.click(function() {
+					_this.Cal.show(calendarId);
+				});
+				
+				edit.click(function() {
+					_this.Cal.edit(calendarId);
+				});
+
+				deleteBtn.click(function() {
+					_this.Cal.deleteCal(calendarId);
+				});
+
+				permissions.click(function() {
+					_this.Cal.grantPermission(calendarId);
 				});
 				
 				content.push(buttonWrapper);
@@ -1037,34 +1174,6 @@ var cal = new function Calendar() {
 				
 				_this.Cal.fetch(callback);
 			}
-			
-			/**
-			 * Show the overlay for creating a new calendar.
-			 */
-			this.calendar = function() {
-				var title	= 'Kalender anlegen';
-				var content	= new Array();
-				
-				var contentWrapper = $('<div />');
-				$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Name');
-				$('<input />', {'id': 'name', 'class': 'cal_form_input', 'type': 'text'}).appendTo(contentWrapper);
-				$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Beschreibung');
-				$('<textarea />', {'id': 'desc', 'class': 'cal_form_input'}).appendTo(contentWrapper);
-				$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Farbe');
-				$('<input />', {'id': 'color', 'class': 'cal_form_input', 'type': 'text'}).appendTo(contentWrapper);
-				
-				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
-				var create			= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Erstellen'}).appendTo(buttonWrapper);
-				
-				create.click(function() {
-					_this.Cal.create($('#name').val(), $('#desc').val(), $('#color').val());
-				});
-				
-				content.push(contentWrapper);
-				content.push(buttonWrapper);
-				
-				_this.Overlay.show(title, content);
-			};
 		}
 		
 		/**
@@ -1228,38 +1337,6 @@ var cal = new function Calendar() {
 				
 				_this.Series.fetch(dateId, callback);
 			};
-			
-			/**
-			 * Set permissions for a calendar.
-			 * 
-			 * @param	{int}	calId
-			 *   The id of the calendar to grant permissions.
-			 */
-			this.setCalendarPermission = function(calId) {
-				var title	= 'Kalender Rechte vergeben';
-				var content	= new Array();
-				
-				var contentWrapper = $('<div />');
-				$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Email');
-				$('<input />', {'id': 'email', 'class': 'cal_form_input', 'type': 'text'}).appendTo(contentWrapper);
-				$('<label />', {'class': 'cal_form_label'}).appendTo(contentWrapper).text('Berechtigung');
-				var permission = $('<select />', {'id': 'permission', 'class': 'cal_form_select'}).appendTo(contentWrapper);
-				$('<option />', {'class': 'cal_form_select_option'}).appendTo(permission).val(1).text('Leserechte');
-				$('<option />', {'class': 'cal_form_select_option'}).appendTo(permission).val(2).text('Schreib- & Leserechte');
-				$('<option />', {'class': 'cal_form_select_option'}).appendTo(permission).val(3).text('Vollzugriff');
-				
-				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
-				var append			= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Zuteilen'}).appendTo(buttonWrapper);
-				
-				append.click(function() {
-					_this.Cal.grantPermission(calId, $('#email').val(), $('#permission').val());
-				});
-				
-				content.push(contentWrapper);
-				content.push(buttonWrapper);
-				
-				_this.Overlay.show(title, content);
-			}
 		}
 		
 		/**
@@ -1293,16 +1370,14 @@ var cal = new function Calendar() {
 			 *   The header box.
 			 */
 			var _createDayHeader = function() {
-				var dayHeaderBox	= $('<div />', {'id': 'cal_day_head_box'});
-				var dayHeaderRoot	= $('<div />', {'id': 'week_head_root'}).appendTo(dayHeaderBox);
+				var dayHeadWrapper = $('#calendar_head');
+				dayHeadWrapper.empty();
+				dayHeadWrapper.css('display', '');
+				$('#calendar_body').css('height', '');
 				
 				for(var i = 0; i < 7; i++) {
-					$('<div />', {'class': 'week_head_day'}).appendTo(dayHeaderRoot).text(_this.SmallCal.getDayName(i));
+					$('<div />', {'class': 'calendar_head_days'}).appendTo(dayHeadWrapper).text(_this.SmallCal.getDayName(i));
 				}
-				
-				$('<div />', {'class': 'clear'}).appendTo(dayHeaderRoot);
-				
-				return dayHeaderBox;
 			};
 			
 			/**
@@ -1312,23 +1387,23 @@ var cal = new function Calendar() {
 			 *   The table for the week.
 			 */
 			var _createWeekTable = function() {
-				var backgroundTable = $('<table />', {'class': 'background_table'});
+				var weekTable = $('<table />', {'class': 'calendar_background_table'});
 				
 				for(var i = 0; i < 24; i++) {
 					for(var j = 0; j < 4; j++) {
-						var tr = $('<tr />', {'class': 'background_table_row'}).appendTo(backgroundTable);
+						var tr = $('<tr />', {'class': 'calendar_background_table_row'}).appendTo(weekTable);
 						
 						if(j == 0) {
-							$('<td />', {'class': 'day_table_hour_col', 'rowspan': 4}).appendTo(tr).text(i + ':00');
+							$('<td />', {'class': 'calendar_background_table_hours', 'rowspan': 4}).appendTo(tr).text(i + ':00');
 						}
 						
 						for(var k = 0; k < 7; k++) {
-							$('<td />', {'class': 'week_table_main_col'}).appendTo(tr);
+							$('<td />', {'class': 'calendar_background_table_week_items'}).appendTo(tr);
 						}
 					}
 				}
 				
-				return backgroundTable;
+				$('#calendar_body').append(weekTable);
 			};
 			
 			/**
@@ -1338,23 +1413,21 @@ var cal = new function Calendar() {
 			 *   The wrapper for the day table.
 			 */
 			this.day = function() {
-				var dayTableWrapper = $('<div />', {'id': 'cal_box'});
-				
-				var backgroundTable = $('<table />', {'class': 'background_table'}).appendTo(dayTableWrapper);
+				var dayTable = $('<table />', {'class': 'calendar_background_table'});
 				
 				for(var i = 0; i < 24; i++) {
 					for(var j = 0; j < 4; j++) {
-						var tr = $('<tr />', {'class': 'background_table_row'}).appendTo(backgroundTable);
+						var tr = $('<tr />', {'class': 'calendar_background_table_row'}).appendTo(dayTable);
 						
 						if(j == 0) {
-							$('<td />', {'class': 'day_table_hour_col', 'rowspan': 4}).appendTo(tr).text(i + ':00');
+							$('<td />', {'class': 'calendar_background_table_hours', 'rowspan': 4}).appendTo(tr).text(i + ':00');
 						}
 						
-						$('<td />', {'class': 'day_table_main_col'}).appendTo(tr);
+						$('<td />', {'class': 'calendar_background_table_day_items'}).appendTo(tr);
 					}
 				}
 				
-				return dayTableWrapper;
+				$('#calendar_body').append(dayTable);
 			};
 			
 			/**
@@ -1364,23 +1437,14 @@ var cal = new function Calendar() {
 			 *   The day header and the week view.
 			 */
 			this.week = function() {
-				var weekItems = new Array();
+				_createDayHeader();
+				_createWeekTable();
 				
-				var weekView	= $('<div />', {'id': 'cal_box'});
-				
-				var weekBgTable	= _createWeekTable();
-				weekBgTable.appendTo(weekView);
-				
-				var weekItemBox	= $('<div />', {'id': 'cal_item_box'}).appendTo(weekView);
+				var weekItemBox	= $('<div />', {'id': 'calendar_items_box'}).appendTo($('#calendar_body'));
 				
 				for(var i = 0; i < 7; i++) {
-					$('<div />', {'class': 'cal_item_day_col'}).appendTo(weekItemBox);
+					$('<div />', {'class': 'calendar_items_rows'}).appendTo(weekItemBox);
 				}
-				
-				weekItems.push(_createDayHeader());
-				weekItems.push(weekView);
-				
-				return weekItems;
 			};
 			
 			/**
@@ -1390,35 +1454,19 @@ var cal = new function Calendar() {
 			 *   The day table and the month view.
 			 */
 			this.month = function() {
-				var monthItems = new Array();
-				
-				var monthView		= $('<div />', {'id': 'cal_box'});
-				var monthItemBox	= $('<div />', {'id': 'month_item_box'}).appendTo(monthView);
+				_createDayHeader();
+
+				var monthItemBox	= $('<div />', {'id': 'calendar_month_item_wrapper'}).appendTo($('#calendar_body'));
 				
 				var selectedDate	= _this.SmallCal.getSelectedDate();
 				var monthDays		= _this.SmallCal.getMonthDays(selectedDate.getMonth(), selectedDate.getFullYear());
 				
 				for(var i = 0; i < monthDays.length; i++) {
-					var itemClass = 'month_item month_item_' + (monthDays[i].active ? '' : 'not_') + 'active';
+					var itemClass = 'calendar_month_item ' + (monthDays[i].active ? '' : 'inactive');
 					var monthItem = $('<div />', {'class': itemClass}).appendTo(monthItemBox);
-					$('<div />', {'class': 'month_item_content'}).appendTo(monthItem);
-					$('<div />', {'class': 'month_item_label'}).appendTo(monthItem).text(monthDays[i].nr);
+					$('<div />', {'class': 'calendar_month_item_content'}).appendTo(monthItem);
+					$('<div />', {'class': 'calendar_month_item_label'}).appendTo(monthItem).text(monthDays[i].nr);
 				}
-				
-				monthItems.push(_createDayHeader());
-				monthItems.push(monthView);
-				
-				return monthItems;
-			};
-			
-			/**
-			 * Create the list view.
-			 * 
-			 * @return	{jQuery}
-			 *   The wrapper for the list view.
-			 */
-			this.list = function() {
-				return $('<div />', {'id': 'cal_box'});
 			};
 		}
 		
@@ -1485,20 +1533,19 @@ var cal = new function Calendar() {
 							notes	= notes.substr(0, 40) + '...';
 						}
 						
-						notes			= notes != '' ? '<br><span class="notes"' + (notes_l != '' ? (' title="' + notes_l + '"') : '') + '>' + notes + '</span>' : '';
-						var location	= date.location ? '<br><span class="location">' + date.location + '</span>' : '';
+						notes		= notes != '' ? '<br><span class="notes"' + (notes_l != '' ? (' title="' + notes_l + '"') : '') + '>' + notes + '</span>' : '';
 						
 						var start	= new Date(date.starttime * 1000);
 						var top		= start.getHours() * 60 + start.getMinutes();
 						var height	= (date.endtime - date.starttime) / 60;
 						
-						var dateItem = $('<div />', {'class': 'cal_item shadow_outer'}).appendTo(wrapper).html(marker + name + notes + location);
+						var dateItem = $('<div />', {'class': 'cal_item shadow_outer'}).appendTo(wrapper).html(marker + name + notes);
 						dateItem.css({'top': top + 'px', 'height': height + 'px'});7
 						
-						var seriesId	= date.id;
-						var occurence	= date.occurence;
+						var seriesId	= date.appointment_id;
+						var occurence	= date.series;
 						
-						if(occurence == 0) {
+						if(occurence) {
 							dateItem.click(function() { _this.Overlay.Edit.singleDate(seriesId); });
 						} else {
 							dateItem.click(function() { _this.Overlay.ShowDialogue.seriesOrException(seriesId, occurence); });
@@ -1652,12 +1699,12 @@ var cal = new function Calendar() {
 			/**
 			 * Update the actual view.
 			 */
-			this.all = function() {
+			this.general = function() {
 				var selected	= _this.SmallCal.getSelectedDate();
 				var text		= '';
 				
 				if(_type == 'day' || _type == 'week') {
-					$('#cal_box').animate({scrollTop: 420}, 0);
+					$('#calendar_body').animate({scrollTop: 420}, 0);
 				}
 				
 				switch(_type) {
@@ -1711,7 +1758,7 @@ var cal = new function Calendar() {
 					  break;
 				}
 				
-				$('#cal_head_box').text(text);
+				$('#info_line').text(text);
 			};
 		};
 		
@@ -1738,31 +1785,30 @@ var cal = new function Calendar() {
 			
 			$('.submenu .menu_item').removeClass('active');
 			$('#view_selector_' + _type).addClass('active');
-			
-			var view;
+			$('#calendar_body').empty().css('height', 'calc(100% - 35px)');
+			$('#calendar_head').css('display', 'none');
+
 			
 			switch(_type) {
 				case 'week':
-					view = _create.week();
+					_create.week();
 				  break;
 				
 				case 'month':
-					view = _create.month();
+					_create.month();
 				  break;
 				
 				case 'list':
-					view = _create.list();
 				  break;
 				
 				default:
-					view = _create.day();
+					_create.day();
 				  break;
 			}
 			
-			$('#cal_root_box').empty().append(view);
 			_this.SmallCal.create();
 			
-			_update.all();
+			_update.general();
 		};
 		
 		/**

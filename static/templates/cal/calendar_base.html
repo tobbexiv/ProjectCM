@@ -1,9 +1,18 @@
 {% extends "base.html" %}
 
+{% block css_imports %}
+	@import "{{ STATIC_FILES }}css/styles_calendar.css" screen;
+{% endblock %}
 
 {% block js_imports %}
 	<script type="text/javascript" src="{{ STATIC_FILES }}js/jquery.cookie.js"></script>
 	<script type="text/javascript" src="{{ STATIC_FILES }}js/calendar.js"></script>
+	<script type="text/javascript">
+		$(document).ready(function() {
+			cal.View.show('day');
+			setTimeout(cal.Cal.fetch, 500);
+		});
+	</script>
 {% endblock %}
 
 {% block submenu %}
@@ -16,9 +25,24 @@
 {% endblock %}
 
 {% block content_left %}
+	<div id="calendar_date_selector">
+		<ul>
+			<li onclick="cal.View.setPrev();">&lt;</li>
+			<li onclick="cal.View.setToday();">Heute</li>
+			<li onclick="cal.View.setNext();">&gt;</li>	
+			<li id="calendar_add_new_appointment" onclick="cal.Overlay.Create.series();">+</li>
+		</ul>
+	</div>
 	<div id="small_calendar_wrapper"></div>
-	<div id="calendar_list_wrapper"></div>
+	<div id="calendar_list_wrapper">
+		<div id="calendar_list_header">
+			<span>Kalender</span><span id="calendar_add_new" class="pointer" onclick="cal.Calendar.create();">+</span>
+		</div>
+		<div id="calendar_list_box"></div>	
+	</div>
 {% endblock %}
 
 {% block content_right %}
+	<div id="calendar_head"></div>
+	<div id="calendar_body"></div>
 {% endblock %}
