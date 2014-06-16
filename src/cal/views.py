@@ -138,7 +138,7 @@ def appointment_list(request):
 						for i in range(1, days_between+1):
 							new_start_date = appo.start_date + timedelta(days=1*i)
 							new_end_date = appo.end_date + timedelta(days=1*i)
-							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date)
+							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date, series=appo.series)
 							
 							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 			
@@ -159,7 +159,7 @@ def appointment_list(request):
 						for i in range(1, weeks_between+1):
 							new_start_date = appo.start_date + timedelta(days=7*i) 
 							new_end_date = appo.end_date + timedelta(days=7*i)
-							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date)
+							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date, series=appo.series)
 
 							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 							
@@ -179,6 +179,12 @@ def appointment_list(request):
 
 	else:
 		return HttpResponse("invalid request")
+
+@login_required
+def appointment_view(request, pk, template_name='cal/appointment_view.html'):
+	appointment = get_object_or_404(Appointment, pk=pk)
+
+	return render(request, template_name, {'appointment':appointment})
 
 @login_required
 def appointment_create(request):
@@ -228,6 +234,18 @@ def appointment_delete(request, pk, template_name='cal/generic_delete.html'):
 
 	return render(request, template_name, {'object':appointment})   
 
+
+@login_required
+def series_view(request, pk, template_name='cal/series_view.html'):
+	appointment = get_object_or_404(Appointment, pk=pk)
+	series = get_object_or_404(Series, pk=appointment.series)
+
+	data = {}
+	data['appointment'] = appointment
+	data['series'] = series
+
+	return render(request, template_name, data)
+
 @login_required
 def series_create(request, template_name='cal/series_form.html'):
 	appointment_form = AppointmentForm(request.POST or None)
@@ -253,6 +271,35 @@ def series_create(request, template_name='cal/series_form.html'):
 	data['series'] = series_form
 
 	return render(request, template_name, data)
+
+@login_required
+def series_update(request, template_name='cal/series_form.html'):
+	appointment = get_object_or_404(Appointment, pk=pk)
+	series = get_object_or_404(Series, pk=appointment.series)
+	appointment_form = AppointmentForm(request.POST or None, instance=appointment)
+	series_form = SeriesForm(request.POST or None, instance=series)
+
+	if appointment_form.is_valid() and series_form.is_valid() and request.method == 'POST' and request.is_ajax:
+		series = series_form.save()
+		appointment = appointment_form.save(commit=False)
+		appointment.series = series
+		appointment.save()
+
+		response = {}
+		response['userName'] = request.user.username
+		response['success'] = True
+		response['data'] = 'Series successfully updated'
+
+		json_response = json.dumps(response)
+		return HttpResponse(json_response, content_type="application/json")
+		
+
+	data = {}
+	data['appointment'] = appointment_form
+	data['series'] = series_form
+
+	return render(request, template_name, data)
+
 
 @login_required
 def series_delete(request, pk, template_name='cal/generic_delete.html'):
