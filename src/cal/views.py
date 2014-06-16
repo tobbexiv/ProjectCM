@@ -138,7 +138,7 @@ def appointment_list(request):
 						for i in range(1, days_between+1):
 							new_start_date = appo.start_date + timedelta(days=1*i)
 							new_end_date = appo.end_date + timedelta(days=1*i)
-							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date, series=appo.series)
+							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date, series=appo.series, pk=appo.id)
 							
 							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 			
@@ -159,7 +159,7 @@ def appointment_list(request):
 						for i in range(1, weeks_between+1):
 							new_start_date = appo.start_date + timedelta(days=7*i) 
 							new_end_date = appo.end_date + timedelta(days=7*i)
-							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date, series=appo.series)
+							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date, series=appo.series , pk=appo.id)
 
 							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 							
