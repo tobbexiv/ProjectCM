@@ -75,7 +75,7 @@ def calendar_update(request, pk, template_name='cal/generic_form.html'):
 		return render(request, template_name, {'form':form})
 
 @login_required
-def calendar_delete(request, pk, template_name='cal/generic_delete.html'):
+def calendar_delete(request, pk, template_name='cal/calendar_delete.html'):
 		calendar = get_object_or_404(Calendar, pk=pk)
 		if request.method=='POST' and request.is_ajax:
 				calendar.delete()
@@ -107,23 +107,18 @@ def appointment_list(request):
 		all_appointments = []
 
 		for calendar in calendar_list:
-			appointments = Appointment.objects.filter(calendar=calendar, start_date__lte=to_date, end_date__gte=from_date)			
-			for appo in appointments:
-
-				if not appo.series:
-					
-					all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))  
-				else:	
-			# series = Appointment.objects.filter(calendar=calendar, series=None, start_date__lte=to_date, end_date__gte=from_date)
-			# series = Series.objects.filter(first_occurence__lte=to_date, last_occurence__gte=to_date)
-								
-					all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))
-					day1 = (from_date - timedelta(days=from_date.weekday()))
-					day2 = (to_date - timedelta(days=to_date.weekday()))
+			appointments = Appointment.objects.filter(calendar=calendar, start_date__lte=to_date, end_date__gte=from_date, series=None) 			
+			for appo in appointments:						
+				all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))  
+				
+			series = Appointment.objects.filter(calendar=calendar, start_date__lte=to_date, end_date__gte=from_date, series__first_occurence__lte=to_date, series__last_occurence__gte=from_date)	
+			
+			for appo in series:					
+					all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))				
 
 					if appo.series.reoccurences == 'daily':
-						days_between = int((day2 - day1).days)
-
+						days_between = int((to_date - from_date).days)
+						print(days_between)
 						if days_between != 0:			
 							for i in range(1, days_between):
 								new_start_date = appo.start_date + timedelta(days=1*i)
