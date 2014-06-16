@@ -205,7 +205,7 @@ def appointment_create(request):
 @login_required
 def appointment_update(request, pk, template_name='cal/generic_form.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
-	form = AppointmentForm(rquest.POST or None, instance=appointment)
+	form = AppointmentForm(request.POST or None, instance=appointment)
 	if form.is_valid() and request.method == "POST" and request.is_ajax:
 		form.save()
 		response = {}
@@ -238,7 +238,7 @@ def appointment_delete(request, pk, template_name='cal/generic_delete.html'):
 @login_required
 def series_view(request, pk, template_name='cal/series_view.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
-	series = get_object_or_404(Series, pk=appointment.series)
+	series = get_object_or_404(Series, pk=appointment.series.id)
 
 	data = {}
 	data['appointment'] = appointment
@@ -275,7 +275,7 @@ def series_create(request, template_name='cal/series_form.html'):
 @login_required
 def series_update(request, pk, template_name='cal/series_form.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
-	series = get_object_or_404(Series, pk=appointment.series)
+	series = get_object_or_404(Series, pk=appointment.series.id)
 	appointment_form = AppointmentForm(request.POST or None, instance=appointment)
 	series_form = SeriesForm(request.POST or None, instance=series)
 
@@ -304,7 +304,7 @@ def series_update(request, pk, template_name='cal/series_form.html'):
 @login_required
 def series_delete(request, pk, template_name='cal/generic_delete.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
-	series = get_object_or_404(Series, pk=appointment.series)
+	series = get_object_or_404(Series, pk=appointment.series.id)
 
 	if request.method == 'POST' and request.is_ajax:
 		appointment.delete()
