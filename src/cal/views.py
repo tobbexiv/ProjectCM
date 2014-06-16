@@ -41,6 +41,8 @@ def calendar_view(request, pk, template_name='cal/calendar_view.html'):
 @login_required
 def calendar_create(request):
 	form = CalendarForm(request.POST or None)
+	max_calendars = request.user.profile.max_no_mail_accounts
+
 	if form.is_valid() and request.method == "POST" and request.is_ajax:
 		calendar = form.save(commit=False)
 		calendar.calendar_owner = request.user
@@ -107,7 +109,8 @@ def appointment_list(request):
 		all_appointments = []
 
 		for calendar in calendar_list:
-			appointments = Appointment.objects.filter(calendar=calendar, start_date__lte=to_date, end_date__gte=from_date, series=None) 			
+			appointments = Appointment.objects.filter(calendar=calendar, start_date__lte=to_date, end_date__gte=from_date, series=None) 
+
 			for appo in appointments:						
 				all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))  
 				
@@ -117,7 +120,20 @@ def appointment_list(request):
 					all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))				
 
 					if appo.series.reoccurences == 'daily':
-						days_between = int((appo.series.last_occurence - appo.series.first_occurence).days)
+
+						
+						if appo.series.first_occurence > datetime.date(from_date):
+							new_from_date = appo.series.first_occurence
+						else:
+							new_from_date = datetime.date(from_date)
+
+						if appo.series.last_occurence < datetime.date(to_date):
+							new_to_date = appo.series.last_occurence
+						else: 	
+							new_to_date = datetime.date(to_date)
+
+						days_between = int((new_to_date - new_from_date).days)
+
 														
 						for i in range(1, days_between+1):
 							new_start_date = appo.start_date + timedelta(days=1*i)
@@ -126,8 +142,19 @@ def appointment_list(request):
 							
 							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 			
-					elif appo.series.reoccurences == 'weekly':						
-						weeks_between = int((appo.series.last_occurence - appo.series.first_occurence).days / 7)
+					elif appo.series.reoccurences == 'weekly':				
+
+						if appo.series.first_occurence > datetime.date(from_date):
+							new_from_date = appo.series.first_occurence
+						else:
+							new_from_date = datetime.date(from_date)
+
+						if appo.series.last_occurence < datetime.date(to_date):
+							new_to_date = appo.series.last_occurence
+						else: 	
+							new_to_date = datetime.date(to_date)		
+
+						weeks_between = int((new_to_date - new_from_date).days / 7)
 					
 						for i in range(1, weeks_between+1):
 							new_start_date = appo.start_date + timedelta(days=7*i) 
