@@ -10,7 +10,7 @@ class UserForm(ModelForm):
 		fields = ['first_name', 'last_name', 'email']
 
 @login_required
-def account_show(request, template_name='accounts/show.html'):
+def account_show(request, template_name='account/show.html'):
 	userdata = User.objects.get(username=request.user.username)
 	userprofile = userdata.profile
 	
@@ -18,11 +18,11 @@ def account_show(request, template_name='accounts/show.html'):
 
 
 @login_required
-def account_edit(request, pk, template_name='accounts/edit_form.html'):
+def account_edit(request, pk, template_name='account/edit_form.html'):
 	userdata = get_object_or_404(User, pk=pk)
 	form = UserForm(request.POST or None, instance=userdata)
 	if form.is_valid():
 		form.save()
-		return redirect('accounts.views.account_show')
+		return redirect('account.views.account_show')
 
 	return render(request, template_name, {'form':form})		
