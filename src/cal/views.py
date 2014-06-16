@@ -70,11 +70,11 @@ def calendar_delete(request, pk, template_name='calendar/calendar_delete.html'):
 @login_required
 def appointment_list(request):
 	if request.method == "GET": #request.method == "POST" and request.is_ajax:
-		#json_data = json.loads(request.raw_post_data)
-		now = datetime.utcnow().replace(tzinfo=utc)
-		from_date = now - timedelta(days=7) #json_data['fetch_after_date']
-		to_date = now + timedelta(days=7) #json_data['fetch_before_date']
-		calendar = Calendar.objects.get(pk=1) #json_data['calendar']
+		json_data = json.loads(request.raw_post_data)
+		#now = datetime.utcnow().replace(tzinfo=utc)
+		from_date = json_data['fetch_after_date']#now - timedelta(days=7) #
+		to_date = json_data['fetch_before_date']#now + timedelta(days=7) #
+		calendar = Calendar.objects.get(pk=json_data['calendar']) #json_data['calendar']
 		
 		ser = CalSerializer()
 		all_appointments = []
