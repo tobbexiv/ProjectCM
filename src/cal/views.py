@@ -3,13 +3,16 @@ from django.contrib.auth.models import User
 from django.contrib.auth.decorators import login_required
 from django.shortcuts import render, redirect, get_object_or_404
 from django.core import serializers
-from django.utils import simplejson
-from cal.models import Calendar, Appointment
+import json 
+from cal.models import Calendar, Appointment, Series
 from cal.forms import CalendarForm
 from django.http import HttpResponse
-from cal.serializer import CalSerializer
+from cal.serializer import CalSerializer, DateTimeEncoder
 from django.core.serializers.json import DjangoJSONEncoder 
 from datetime import datetime, timedelta
+from django.utils.timezone import utc
+
+from django.forms.models import model_to_dict
 
 @login_required
 def calendar_list(request, template_name='calendar/calendar_list.html'):
@@ -20,7 +23,7 @@ def calendar_list(request, template_name='calendar/calendar_list.html'):
 	response['success'] = True
 	response['data'] = ser.serialize(calendar)
 
-	json_response = simplejson.dumps(response)
+	json_response = json.dumps(response)
 	return HttpResponse(json_response, content_type="application/json")
 
 @login_required
@@ -66,56 +69,62 @@ def calendar_delete(request, pk, template_name='calendar/calendar_delete.html'):
 
 @login_required
 def appointment_list(request):
-	if request.method == "GET": #request.method == "POST" and request.is_ajax:
-		json_data = simplejson.loads(request.raw_post_data)
-		from_date = json_data['fetch_after_date']
-		to_date = json_data['fetch_before_date']
-		calendar = json_data['calendar']
+	if request.method == request.method == "POST" and request.is_ajax: #"GET": 
+		json_data = json.loads(request.raw_post_data)
+		#now = datetime.utcnow().replace(tzinfo=utc)
+		from_date = json_data['fetch_after_date']#now - timedelta(days=7) #
+		to_date = json_data['fetch_before_date']#now + timedelta(days=7) #
+		calendar = Calendar.objects.get(pk=json_data['calendar']) #json_data['calendar']
 		
 		ser = CalSerializer()
 		all_appointments = []
 
 		appointments = Appointment.objects.filter(calendar=calendar, series=None, start_date__lte=to_date, end_date__gte=from_date)
-		all_appointments.append(list(appointments))		
+		for appo in appointments:
+			all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))	
 
 
 		series = Series.objects.filter(first_occurence__lte=to_date, last_occurence__gte=to_date)
 		
 		for occ in series:
 			ser_apps = Appointment.objects.get(series=occ)
-			all_appointments.append(list(ser_apps))
+			all_appointments.append(json.dumps(ser_apps, cls=DateTimeEncoder))
 			day1 = (from_date - timedelta(days=from_date.weekday()))
 			day2 = (to_date - timedelta(days=to_date.weekday()))
 
 			if occ.reoccurences == 'daily':
-				days_between = (days2 - days1).days()
-
+				days_between = int((day2 - day1).days)
+				
 				for i in range(1, days_between):
-					new_start_date = ser_apps.start_date + datetime.timedelta(days=1*i)
-					new_end_date = ser_apps.end_date + datetime.timedelta(days=1*i)
-					all_appointments.append(Appointment(calendar=calendar, title=ser_apps.title, description=ser_apps.description, start_date=new_start_date, end_date=new_end_date))
+					new_start_date = ser_apps.start_date + timedelta(days=1*i)
+					new_end_date = ser_apps.end_date + timedelta(days=1*i)
+					new_app = Appointment(calendar=calendar, title=ser_apps.title, description=ser_apps.description, start_date=new_start_date, end_date=new_end_date)
+					
+					all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 	
 			elif occ.reoccurences == 'weekly':
-				weeks_between = (day2 - day1).days() / 7
+				weeks_between = int((day2 - day1).days / 7)
 				
 				for i in range(1, weeks_between):
-					new_start_date = ser_apps.start_date + datetime.timedelta(days=7*i) 
-					new_end_date = ser_apps.end_date + datetime.timedelta(days=7*i)
-					all_appointments.append(Appointment(calendar=calendar, title=ser_apps.title, description=ser_apps.description, start_date=new_start_date, end_date=new_end_date))
+					new_start_date = ser_apps.start_date + timedelta(days=7*i) 
+					new_end_date = ser_apps.end_date + timedelta(days=7*i)
+					new_app = Appointment(calendar=calendar, title=ser_apps.title, description=ser_apps.description, start_date=new_start_date, end_date=new_end_date)
 
+					all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
+
+					
 				
 			elif occ.reoccurences == 'monthly':
-				pass
-			
+				pass		
 
 
 
 		response = {}
 		response['userName'] = request.user.username
 		response['success'] = True
-		response['data'] = ser.serialize(appointments)
+		response['data'] = all_appointments
 
-		json_response = simplejson.dumps(response, cls=DjangoJSONEncoder)
+		json_response = json.dumps(response, cls=DjangoJSONEncoder)
 		return HttpResponse(json_response, content_type="application/json")
 
 	else:
@@ -124,7 +133,7 @@ def appointment_list(request):
 @login_required
 def appointment_create(request):
 	form = AppointmentForm(request.POST or None)
-	if form.is_valid() and request.method="POST" and request.is_ajax:
+	if form.is_valid() and request.method == "POST" and request.is_ajax:
 		appointment = form.save()
 
 		return HttpResponse("data saved")
@@ -135,7 +144,7 @@ def appointment_create(request):
 def appointment_update(request, pk, template_name='calendar/appointment_form.html'):
 	appointment = get_object_or_404(Appointment, pk=pk)
 	form = AppointmentForm(rquest.POST or None, instance=appointment)
-	if form.is_valid() and request.method="POST" and request.is_ajax:
+	if form.is_valid() and request.method == "POST" and request.is_ajax:
 		form.save()
 		return HttpRepsonse("data saved")
 
@@ -145,7 +154,7 @@ def appointment_update(request, pk, template_name='calendar/appointment_form.htm
 @login_required
 def appointment_delete(request, pk, template_name='appointment_delete'):
 	appointment = get_object_or_404(Appointment, pk=pk)
-	if request.method="POST" and request.is_ajax:
+	if request.method == "POST" and request.is_ajax:
 		appointment.delete()
 		return HttpResponse("data deleted")
 
