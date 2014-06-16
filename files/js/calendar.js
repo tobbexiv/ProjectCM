@@ -1440,7 +1440,7 @@ var cal = new function Calendar() {
 				_createDayHeader();
 				_createWeekTable();
 				
-				var weekItemBox	= $('<div />', {'id': 'calendar_items_box'}).appendTo($('#calendar_body'));
+				var weekItemBox	= $('<div />', {'id': 'calendar_appointment_wrapper'}).appendTo($('#calendar_body'));
 				
 				for(var i = 0; i < 7; i++) {
 					$('<div />', {'class': 'calendar_items_rows'}).appendTo(weekItemBox);
@@ -1505,6 +1505,14 @@ var cal = new function Calendar() {
 				
 				return dates;
 			};
+
+			var _addRudLink = function(item, appointmentId, isSeries) {
+				if(isSeries) {
+					item.click(function() { _this.Overlay.Edit.singleDate(seriesId); });
+				} else {
+					item.click(function() { _this.Overlay.ShowDialogue.seriesOrException(seriesId, occurence); });
+				}
+			}
 			
 			/**
 			 * Update the day view.
@@ -1516,10 +1524,10 @@ var cal = new function Calendar() {
 				var dates = _sortDay(data);
 				
 				var maxParallel = dates.length;
-				var box = $('<div />', {'id': 'cal_item_box'}).appendTo($('#cal_box'));
+				var box = $('<div />', {'id': 'calendar_appointment_wrapper'}).appendTo($('#calendar_body'));
 				
 				for(var i = 0; i < maxParallel; i++) {
-					var wrapper = $('<div />', {'class': 'cal_item_col'}).appendTo(box);
+					var wrapper = $('<div />', {'class': 'calendar_appointment_column'}).appendTo(box);
 					wrapper.css('width', 100 / maxParallel + '%');
 					
 					$(dates[i]).each(function(index, date) {
@@ -1539,17 +1547,10 @@ var cal = new function Calendar() {
 						var top		= start.getHours() * 60 + start.getMinutes();
 						var height	= (date.endtime - date.starttime) / 60;
 						
-						var dateItem = $('<div />', {'class': 'cal_item shadow_outer'}).appendTo(wrapper).html(marker + name + notes);
+						var dateItem = $('<div />', {'class': 'calendar_appointment shadow_outer'}).appendTo(wrapper).html(marker + name + notes);
 						dateItem.css({'top': top + 'px', 'height': height + 'px'});7
 						
-						var seriesId	= date.appointment_id;
-						var occurence	= date.series;
-						
-						if(occurence) {
-							dateItem.click(function() { _this.Overlay.Edit.singleDate(seriesId); });
-						} else {
-							dateItem.click(function() { _this.Overlay.ShowDialogue.seriesOrException(seriesId, occurence); });
-						}
+						_addRudLink(dateItem, date.appointment_id, date.series);
 					});
 				}
 			};
@@ -1578,10 +1579,10 @@ var cal = new function Calendar() {
 					var dates = _sortDay(dataPerDay[k]);
 					
 					var maxParallel = dates.length;
-					var box = $('.cal_item_day_col:nth-child(' + (k + 1) + ')');
+					var box = $('.calendar_items_rows:nth-child(' + (k + 1) + ')');
 					
 					for(var i = 0; i < maxParallel; i++) {
-						var wrapper = $('<div />', {'class': 'cal_item_col'}).appendTo(box);
+						var wrapper = $('<div />', {'class': 'calendar_appointment_column'}).appendTo(box);
 						wrapper.css('width', 100 / maxParallel + '%');
 						
 						$(dates[i]).each(function(index, date) {
@@ -1595,24 +1596,16 @@ var cal = new function Calendar() {
 								notes	= notes.substr(0, 40) + '...';
 							}
 							
-							notes			= notes != '' ? '<br><span class="notes"' + (notes_l != '' ? (' title="' + notes_l + '"') : '') + '>' + notes + '</span>' : '';
-							var location	= date.location ? '<br><span class="location">' + date.location + '</span>' : '';
+							notes		= notes != '' ? '<br><span class="notes"' + (notes_l != '' ? (' title="' + notes_l + '"') : '') + '>' + notes + '</span>' : '';
 							
 							var start	= new Date(date.starttime * 1000);
 							var top		= start.getHours() * 60 + start.getMinutes();
 							var height	= (date.endtime - date.starttime) / 60;
 							
-							var dateItem = $('<div />', {'class': 'cal_item shadow_outer'}).appendTo(wrapper).html(marker + name + notes + location);
+							var dateItem = $('<div />', {'class': 'calendar_appointment shadow_outer'}).appendTo(wrapper).html(marker + name + notes);
 							dateItem.css({'top': top + 'px', 'height': height + 'px'});
 							
-							var seriesId	= date.id;
-							var occurence	= date.occurence;
-							
-							if(occurence == 0) {
-								dateItem.click(function() { _this.Overlay.Edit.singleDate(seriesId); });
-							} else {
-								dateItem.click(function() { _this.Overlay.ShowDialogue.seriesOrException(seriesId, occurence); });
-							}
+							_addRudLink(dateItem, date.appointment_id, date.series);
 						});
 					}
 				}
@@ -1637,7 +1630,7 @@ var cal = new function Calendar() {
 				}
 				
 				for(var i = 0; i < dataPerDay.length; i++) {
-					var box = $('.month_item_active:eq(' + i + ') .month_item_content');
+					var box = $('.calendar_month_item:not(.inactive):eq(' + i + ') .calendar_month_item_content');
 					
 					$(dataPerDay[i]).each(function(index, date) {
 						var start	= new Date(date.starttime * 1000);
@@ -1649,14 +1642,7 @@ var cal = new function Calendar() {
 						
 						var dateItem = $('<div />', {'class': 'month_item_content_date', 'title': notes}).appendTo(box).html(marker + time + name);
 						
-						var seriesId	= date.id;
-						var occurence	= date.occurence;
-						
-						if(occurence == 0) {
-							dateItem.click(function() { _this.Overlay.Edit.singleDate(seriesId); });
-						} else {
-							dateItem.click(function() { _this.Overlay.ShowDialogue.seriesOrException(seriesId, occurence); });
-						}
+						_addRudLink(dateItem, date.appointment_id, date.series);
 					});
 				}
 			};
@@ -1668,10 +1654,10 @@ var cal = new function Calendar() {
 			 *   The data to show.
 			 */
 			var _updateList = function(data) {
-				var calBox		= $('#cal_box');
-				var listPrev	= $('<div />', {'id': 'cal_list_prev'}).appendTo(calBox);
-				var listContent	= $('<div />', {'id': 'cal_list_content'}).appendTo(calBox);
-				var listNext	= $('<div />', {'id': 'cal_list_next'}).appendTo(calBox);
+				var calBox		= $('#calendar_body');
+				var listPrev	= $('<div />', {'id': 'calendar_list_prev'}).appendTo(calBox);
+				var listContent	= $('<div />', {'id': 'calendar_list_content'}).appendTo(calBox);
+				var listNext	= $('<div />', {'id': 'calendar_list_next'}).appendTo(calBox);
 				
 				$(data).each(function(index, date) {
 					var start	= new Date(date.starttime * 1000);
@@ -1681,18 +1667,10 @@ var cal = new function Calendar() {
 					var time		= '<span class="time">' + _this.Helper.getFormattedTime(start, true, true) + ' - ' + _this.Helper.getFormattedTime(end, false, true) + '</span>';
 					var name		= '<br><span class="name">' + date.name + '</span>';
 					var notes		= date.notes ? '<br><span class="notes">' + date.notes + '</span>' : '';
-					var location	= date.location ? '<br><span class="location">' + date.location + '</span>' : '';
+
+					var dateDiv = $('<div />', {'class': 'calendar_list_item'}).appendTo(listContent).html(marker + time + name + notes);
 					
-					var dateDiv = $('<div />', {'class': 'cal_list_item'}).appendTo(listContent).html(marker + time + name + notes + location);
-					
-					var seriesId	= date.id;
-					var occurence	= date.occurence;
-					
-					if(occurence == 0) {
-						dateDiv.click(function() { _this.Overlay.Edit.singleDate(seriesId); });
-					} else {
-						dateDiv.click(function() { _this.Overlay.ShowDialogue.seriesOrException(seriesId, occurence); });
-					}
+					_addRudLink(dateDiv, date.appointment_id, date.series);
 				});
 			};
 			

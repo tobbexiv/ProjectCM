@@ -75,7 +75,7 @@ def calendar_update(request, pk, template_name='cal/generic_form.html'):
 		return render(request, template_name, {'form':form})
 
 @login_required
-def calendar_delete(request, pk, template_name='cal/calendar_delete.html'):
+def calendar_delete(request, pk, template_name='cal/generic_delete.html'):
 		calendar = get_object_or_404(Calendar, pk=pk)
 		if request.method=='POST' and request.is_ajax:
 				calendar.delete()
