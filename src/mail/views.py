@@ -16,11 +16,7 @@ from mail.serializer import AccountSerializer
 def mailaccount_list(request, template_name='mail/mailaccount_list.html'):
 	accounts = MailAccount.objects.filter(mail_account_owner=request.user)	
 
-	json_data = []
-	for acc in accounts:
-		json_data.append(json.dumps(acc, cls=AccountSerializer))
-
-	return HttpResponse(json_data, content_type="application/json")
+	return render(request, template_name, {'account':accounts})
 
 
 @login_required
