@@ -664,12 +664,12 @@ var cal = new function Calendar() {
 		/**
 		 * Storage for the day names.
 		 */
-		var _dayNames = ['Montag', 'Dienstag', 'Mittwoch', 'Donnerstag', 'Freitag', 'Samstag', 'Sonntag'];
+		var _dayNames = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sonday'];
 		
 		/**
 		 * Storage for the month names.
 		 */
-		var _monthNames = ['Januar', 'Februar', 'März', 'April', 'Mai', 'Juni', 'Juli', 'August', 'September', 'Oktober', 'November', 'Dezember'];
+		var _monthNames = ['January', 'February', 'March', 'April', 'Mai', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
 		
 		/**
 		 * Returns the selected date.
@@ -932,10 +932,10 @@ var cal = new function Calendar() {
 				var title	= 'Bitte wählen';
 				var content	= new Array();
 				
-				content.push($('<div />').text('Möchten sie einen Serietermin oder einen Einzeltermin anlegen?'));
+				content.push($('<div />').text('Do you want to create a series or an appointment?'));
 				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
-				var series			= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Serie'}).appendTo(buttonWrapper);
-				var appointment		= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Einzeltermin'}).appendTo(buttonWrapper);
+				var series			= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Series'}).appendTo(buttonWrapper);
+				var appointment		= $('<input />', {'type': 'button', 'class': 'cal_form_button', 'value': 'Appointment'}).appendTo(buttonWrapper);
 				
 				series.click(function() {
 					_this.Series.create();
@@ -954,7 +954,7 @@ var cal = new function Calendar() {
 				var title	= 'Bitte wählen';
 				var content	= new Array();
 				
-				content.push($('<div />').text('Was möchten sie mit der Serie ' + appointmentName + ' machen?'));
+				content.push($('<div />').text('What would you like to do with the series ' + appointmentName + '?'));
 				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
 				var show			= $('<input />', {'type': 'button', 'value': 'Show'}).appendTo(buttonWrapper);
 				var edit			= $('<input />', {'type': 'button', 'value': 'Edit'}).appendTo(buttonWrapper);
@@ -981,7 +981,7 @@ var cal = new function Calendar() {
 				var title	= 'Bitte wählen';
 				var content	= new Array();
 				
-				content.push($('<div />').text('Was möchten sie mit dem Termin ' + appointmentName + ' machen?'));
+				content.push($('<div />').text('What would you like to do with the appointment ' + appointmentName + '?'));
 				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
 				var show			= $('<input />', {'type': 'button', 'value': 'Show'}).appendTo(buttonWrapper);
 				var edit			= $('<input />', {'type': 'button', 'value': 'Edit'}).appendTo(buttonWrapper);
@@ -1008,7 +1008,7 @@ var cal = new function Calendar() {
 				var title	= 'Bitte wählen';
 				var content	= new Array();
 				
-				content.push($('<div />').text('Was möchten sie mit Kalender ' + calendarName + ' machen?'));
+				content.push($('<div />').text('What would you like to do with the calendar ' + calendarName + '?'));
 				var buttonWrapper	= $('<div />', {'class': 'button_bar'});
 				var show			= $('<input />', {'type': 'button', 'value': 'Show'}).appendTo(buttonWrapper);
 				var edit			= $('<input />', {'type': 'button', 'value': 'Edit'}).appendTo(buttonWrapper);
@@ -1520,22 +1520,6 @@ var cal = new function Calendar() {
 				  break;
 				
 				case 'list':
-//						░░░░░▄▄▄▄▄▄░░░░░░░░░░
-//						░░▄█▀░░░░░▄▀▄░░░░░░░░
-//						░█░▀▀▀▀▀▀▀▀░░█▄░░░░░░
-//						█▀░░░░░░░░░░░░█░░░░░░
-//						█░░░░░░░░░░░░░█░░░░░░
-//						▀█░░░░░░░░░░░░█░░░░░░
-//						░▀▄░░░░░░░░░▄█░░░░░░░
-//						░░░▀█▄▄▄▄▄▄██▄▄░░░░░░
-//						░░▄▄█▀███▀██████░░░░░
-//						░░▀██░░██▀█████▄▄░░░░
-//						░░░░░░░░░░▄▄███▀█▄▀▄░
-//						░░▄█▄▄▄██████▀▄▀▄▀█▄▀
-//						░██░░░▀██▀░░░░░░▄▀▄█░
-//						░█▄░░░░░█▄░░░░░░░▀░░░
-//						░░▀█▄░░░░▀▀▀░░░░░░░░░
-//						Nothing to do here!!!
 				  break;
 				
 				default:
@@ -1569,22 +1553,6 @@ var cal = new function Calendar() {
 				  break;
 				
 				case 'list':
-//						░░░░░▄▄▄▄▄▄░░░░░░░░░░
-//						░░▄█▀░░░░░▄▀▄░░░░░░░░
-//						░█░▀▀▀▀▀▀▀▀░░█▄░░░░░░
-//						█▀░░░░░░░░░░░░█░░░░░░
-//						█░░░░░░░░░░░░░█░░░░░░
-//						▀█░░░░░░░░░░░░█░░░░░░
-//						░▀▄░░░░░░░░░▄█░░░░░░░
-//						░░░▀█▄▄▄▄▄▄██▄▄░░░░░░
-//						░░▄▄█▀███▀██████░░░░░
-//						░░▀██░░██▀█████▄▄░░░░
-//						░░░░░░░░░░▄▄███▀█▄▀▄░
-//						░░▄█▄▄▄██████▀▄▀▄▀█▄▀
-//						░██░░░▀██▀░░░░░░▄▀▄█░
-//						░█▄░░░░░█▄░░░░░░░▀░░░
-//						░░▀█▄░░░░▀▀▀░░░░░░░░░
-//						Nothing to do here!!!
 				  break;
 				
 				default:
