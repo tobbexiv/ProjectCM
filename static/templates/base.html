@@ -4,6 +4,7 @@
 <!DOCTYPE html>
 <html>
 	<head>
+		<link rel="shortcut icon" type="image/x-icon" href="{{ STATIC_FILES }}images/logo_projectcm.png" />
 		<title>ProjectCM - {{ title|default:"a software engineering project" }}</title>
 		<style type="text/css">
 			@import "{{ STATIC_FILES }}css/styles.css" screen;
@@ -27,7 +28,7 @@
 							<li class="menu_item"><a href="{% url 'cal.views.calendar_base' %}">Calendar</a></li>
 							<li class="menu_item"><a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a></li>
 							<li class="menu_item"><a href="{% url 'mail.views.mailaccount_list' %}">Mail Accounts</a></li>
-							<li class="menu_item"><a href="{% url 'mail.views.mailaccount_select' %}">Show Messages</a></li>
+							<!--<li class="menu_item"><a href="{% url 'mail.views.mailaccount_select' %}">Show Messages</a></li>-->
 						</ul>
 					{% endblock %}
 				</div>
@@ -39,7 +40,7 @@
 						<span id="info_line">{% block info_line %}{% endblock %}</span>
 						<div class="submenu">{% block submenu %}{% endblock %}</div>
 					</div>
-					<div class="bottom">{% block content_right %}Welcome{% endblock %}</div>
+					<div class="bottom">{% block content_right %}Welcome to ProjectCM{% endblock %}</div>
 				</div>
 			</div>
 			<div id="footer">{% block footer %}ProjectCM - Software Engineering Project - Andreas Haberl - Tobias Engelmann - Tobias Seber{% endblock %}</div>

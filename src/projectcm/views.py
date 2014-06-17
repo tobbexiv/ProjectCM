@@ -6,7 +6,7 @@ from django.contrib.auth.decorators import login_required
 @login_required
 def home(request):
 	data = {}
-	data['title'] = "ProjectCM Main Page"
+	data['title'] = "Main Page"
 
 	return render(request,'base.html' , data)
 

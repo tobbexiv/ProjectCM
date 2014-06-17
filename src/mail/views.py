@@ -139,7 +139,7 @@ def mailboxes_list(request, mail_account_id):
 
 
 @login_required
-def message_list(request, pk, template_name='message_list.html'):
+def message_list(request, pk, template_name='mail/message_list.html'):
 	account_data = MailAccount.objects.get(pk=pk)
 	
 	imap_helper = ImapHelper(account_data)
@@ -172,7 +172,7 @@ def message_list(request, pk, template_name='message_list.html'):
 
 
 @login_required
-def message_view(request, pk, template_name='message_view.html'):
+def message_view(request, pk, template_name='mail/message_view.html'):
 	message = Message.objects.get(pk=pk)
 	data = {}
 	data['message'] = message 

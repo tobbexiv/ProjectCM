@@ -1,5 +1,5 @@
 var LanguageData = {
-	defaultCode:	'de',
+	defaultCode:	'en',
 	de: {
 		name: 'Deutsch',
 		text: {

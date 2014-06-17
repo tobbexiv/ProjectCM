@@ -69,7 +69,6 @@
 #calendar_date_selector ul {
 	margin-top: 15%;
 	width: 100%;
-	margin-left: 15px;
 }
 
 #calendar_date_selector li {
@@ -148,11 +147,11 @@
 
 #calendar_head {
 	height: 25px;
-	width: calc(96% - 46px);
+	width: calc(96% - 66px);
 	background-color: transparent;
 	margin-bottom: 5px;
 	margin-top: 5px;
-	margin-left: 52px;
+	margin-left: 56px;
 	padding-left: -5px;
 }
 
@@ -264,9 +263,10 @@
 }
 
 .calendar_items_rows {
-	width: calc(100% / 7);
+	width: calc(100% / 7 - 10px);
 	float: left;
 	height: 100%;
+	margin: 0px 5px;
 }
 
 /*
@@ -372,11 +372,12 @@
 	position: fixed;
 	visibility: visible;
 	left: calc(50% - 250px);
-	width: 500px;
-	
+	width: 550px;
+	height: calc(100% - 50px);
 	padding: 0px;
 	text-align: left;
 	background-color:white;
+	overflow:hidden;
 }
 
 #overlay_panel_header{
@@ -405,7 +406,7 @@
 }	
 
 #overlay_panel_content{
-	height:calc(100% - 15px);
+	height:calc(100% - 45px);;
 	width: calc(100% - 10px);
 	padding-left:5px;
 	padding-top:10px;

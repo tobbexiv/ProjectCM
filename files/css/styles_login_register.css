@@ -1,18 +1,9 @@
-html{
+html, body {
 	margin:0;
 	padding:0;
 	height:100%;
-	
 }
 
-body{
-	margin:0;
-	padding:0;
-	height:100%;
-	
-}
-
-/*to-do : check whats inherited from body/html */
 #wrapper{
 	position:absolute;
 	margin:0;
@@ -27,7 +18,6 @@ body{
 	font-family:"helvetica", "verdana", sans-serif;
 }	
 
-/*root login box*/
 #login_root{
 	margin-left:auto;
 	margin-right:auto;
@@ -39,13 +29,19 @@ body{
 	border-radius:1px;
 	box-shadow:0px 0px 2px 2px #3d3d3d;
 }	
-	
-/*header part of login box, contains logo*/	
+
 #login_header {
 	text-align:left;
-}	
+}
 
-/*content part of login box, contains login form */
+.page_title {
+	background-image: url("/files/images/logo_blank.png");
+	background-repeat: no-repeat;
+	padding: 35px 0 15px 60px;
+	font: bold 40pt Verdana, Arial, sans-serif;
+	color: #3d3d3d;
+}
+
 #login_content{
 	height:487px;
 	width:100%;	
@@ -60,12 +56,12 @@ body{
 	margin-top:20px;	
 }
 
-#login_style_badge span:hover{
+#login_style_badge span:hover {
 	color:#ff7500 !important;
 	cursor:pointer;
 }	
 
-#login_form_box{
+#login_form_box {
 	text-align:left;
 	position:relative;
 	width:260px;
@@ -74,7 +70,7 @@ body{
 	margin-top:10px;
 }
 
-#login_form_footer{
+#login_form_footer {
 	font-size:10pt;
 	color:#ffffff;
 	height:auto;
@@ -93,65 +89,25 @@ body{
 	border:1px solid #3d3d3d;
 	margin-bottom:10px;
 	color:#3d3d3d;	
+}	
+
+#login_form {
+	margin-top:30px;
 }
 
-#register_form{
-	margin-top:10px;
-}	
-
-#login_form{
-	margin-top:30px;
-}	
-
-#register_show{
-	margin-left:80px;
-}	
-
-.form{
+.form {
 	position:absolute;
 }
 
-.submit{
+.submit {
 	color:#3d3d3d;
 	background-color:white;
 	box-shadow:0px 0px 1px 1px #3a3a3a;
 	cursor:pointer;
 }	
 
-.submit:hover{
+.submit:hover {
 	background-color:#3d3d3d;
 	box-shadow:inset 0 0 3px #000000;
 	color:#ff7500 !important;
-}
-
-/* Hints */
-#hint_bar{
-	top:80px;
-	width:50%;
-	left:25%;
-	color:white;
-	position:absolute;
-	z-index:9001;
-}
-
-#hint_bar p{
-	text-align:center;	
-	margin:5px;
-	padding:10px;	
-}
-
-#hint_bar a{
-	color:white !important;
-	text-decoration:underline !important;
-	font-weight: bold !important;
-}
-
-.error {
-	background-color:#f14700;
-	box-shadow:0 0 3px #822700;
-}
-
-.success {
-	background-color:#00a900;
-	box-shadow:0 0 3px #004d00;
 }

@@ -219,7 +219,7 @@ var cal = new function Calendar() {
 			};
 			
 			var callbackFail = function() {
-				_this.Helper.showHint('Die Anfrage an den Server ist fehlgeschlagen.', 'error');
+				_this.Helper.showHint('The server request failed!', 'error');
 				callback.fail();
 			};
 			
@@ -263,7 +263,7 @@ var cal = new function Calendar() {
 			};
 			
 			var callbackFail = function() {
-				_this.Helper.showHint('Die Anfrage an den Server ist fehlgeschlagen.', 'error');
+				_this.Helper.showHint('The server request failed!', 'error');
 				callback.fail();
 			};
 			
@@ -309,7 +309,7 @@ var cal = new function Calendar() {
 			};
 			
 			var callbackFail = function() {
-				_this.Helper.showHint('Die Anfrage an den Server ist fehlgeschlagen.', 'error');
+				_this.Helper.showHint('The server request failed!', 'error');
 			};
 			
 			$.ajaxSetup({
@@ -376,7 +376,7 @@ var cal = new function Calendar() {
 		};
 
 		this.create = function() {
-			var title	= 'Kalender anlegen';
+			var title	= 'Create calendar';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/new/', parent, function() {
@@ -388,7 +388,7 @@ var cal = new function Calendar() {
 		};
 
 		this.show = function(calendarId) {
-			var title	= 'Kalender anzeigen';
+			var title	= 'Show calendar';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/view/' + calendarId, parent, function() {
@@ -400,7 +400,7 @@ var cal = new function Calendar() {
 		};
 
 		this.edit = function(calendarId) {
-			var title	= 'Kalender bearbeiten';
+			var title	= 'Edit calendar';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/edit/' + calendarId, parent, function() {
@@ -412,7 +412,7 @@ var cal = new function Calendar() {
 		};
 
 		this.deleteCal = function(calendarId) {
-			var title	= 'Kalender löschen';
+			var title	= 'Delete calendar';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/delete/' + calendarId, parent, function() {
@@ -434,7 +434,7 @@ var cal = new function Calendar() {
 		 *   The id of the permission level.
 		 */
 		this.grantPermission = function(calendarId) {
-			var title	= 'Kalenderrechte vergeben';
+			var title	= 'Share calendar';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/calshare/create/', parent, function() {
@@ -459,7 +459,7 @@ var cal = new function Calendar() {
 		 * Create a new appointment (series).
 		 */
 		this.create = function() {
-			var title	= 'Serientermin erstellen';
+			var title	= 'Create series';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/series/create/', parent, function() {
@@ -471,7 +471,7 @@ var cal = new function Calendar() {
 		};
 
 		this.show = function(appointmentId) {
-			var title	= 'Serientermin anzeigen';
+			var title	= 'Show series';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/series/view/' + appointmentId, parent, function() {
@@ -483,7 +483,7 @@ var cal = new function Calendar() {
 		};
 
 		this.edit = function(appointmentId) {
-			var title	= 'Serientermin bearbeiten';
+			var title	= 'Edit series';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/series/update/' + appointmentId, parent, function() {
@@ -501,7 +501,7 @@ var cal = new function Calendar() {
 		 *   The id of the series to delete.
 		 */
 		this.deleteSer = function(appointmentId) {
-			var title	= 'Serientermin löschen';
+			var title	= 'Delete series';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/series/delete/' + appointmentId, parent, function() {
@@ -561,7 +561,7 @@ var cal = new function Calendar() {
 		 *   The number of the occurence of the exception.
 		 */
 		this.show = function(appointmentId) {
-			var title	= 'Termin anzeigen';
+			var title	= 'Show appointment';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/appointment/view/' + appointmentId, parent, function() {
@@ -581,7 +581,7 @@ var cal = new function Calendar() {
 		 *   The number of the occurence of the exception.
 		 */
 		this.edit = function(appointmentId) {
-			var title	= 'Termin bearbeiten';
+			var title	= 'Edit appointment';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/appointment/update/' + appointmentId, parent, function() {
@@ -607,7 +607,7 @@ var cal = new function Calendar() {
 		 *   Additional notes for the exception.
 		 */
 		this.create = function() {
-			var title	= 'Termin ertellen';
+			var title	= 'Create appointment';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/appointment/create/', parent, function() {
@@ -627,7 +627,7 @@ var cal = new function Calendar() {
 		 *   Occurence of the exception in the series.
 		 */
 		this.deleteApp = function(appointmentId) {
-			var title	= 'Termin löschen';
+			var title	= 'Delete appointment';
 
 			var callback = function(parent) {
 				_this.Helper.getForm('/calendar/appointment/delete/' + appointmentId, parent, function() {
@@ -1071,7 +1071,7 @@ var cal = new function Calendar() {
 				var dayHeadWrapper = $('#calendar_head');
 				dayHeadWrapper.empty();
 				dayHeadWrapper.css('display', '');
-				$('#calendar_body').css('height', '');
+				$('#calendar_body').css('height', 'calc(100% - 35px)');
 				
 				for(var i = 0; i < 7; i++) {
 					$('<div />', {'class': 'calendar_head_days'}).appendTo(dayHeadWrapper).text(_this.SmallCal.getDayName(i));
@@ -1461,7 +1461,7 @@ var cal = new function Calendar() {
 			
 			$('.submenu .menu_item').removeClass('active');
 			$('#view_selector_' + _type).addClass('active');
-			$('#calendar_body').empty().css('height', 'calc(100% - 35px)');
+			$('#calendar_body').empty().css('height', 'calc(100% - 5px)');
 			$('#calendar_head').css('display', 'none');
 
 			
