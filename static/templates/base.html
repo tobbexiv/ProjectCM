@@ -24,10 +24,10 @@
 					{% block menu %}
 						<ul>
 							<li class="menu_item_base"><span id="user">{{ request.user.username }}</span>&nbsp;<a id="logout" href="/account/logout">(Logout)</a></li>
-							<li class="menu_item"><a href="{% url 'account.views.account_show'  %}">Show Userdata</a></li>
-							<li class="menu_item"><a href="{% url 'cal.views.calendar_base' %}">Calendar</a></li>
-							<li class="menu_item"><a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a></li>
-							<li class="menu_item"><a href="{% url 'mail.views.mailaccount_list' %}">Mail Accounts</a></li>
+							<li class="menu_item {% block menu_active_userdata %}{% endblock %}"><a href="{% url 'account.views.account_show'  %}">Show Userdata</a></li>
+							<li class="menu_item {% block menu_active_calendar %}{% endblock %}"><a href="{% url 'cal.views.calendar_base' %}">Calendar</a></li>
+							<li class="menu_item {% block menu_active_adressbook %}{% endblock %}"><a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a></li>
+							<li class="menu_item {% block menu_active_mailaccount %}{% endblock %}"><a href="{% url 'mail.views.mailaccount_list' %}">Mail Accounts</a></li>
 							<!--<li class="menu_item"><a href="{% url 'mail.views.mailaccount_select' %}">Show Messages</a></li>-->
 						</ul>
 					{% endblock %}
