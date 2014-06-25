@@ -8,6 +8,13 @@ class CalendarForm(ModelForm):
 		exclude = ['calendar_owner']
 
 class AppointmentForm(ModelForm):
+
+	def __init__(self, *args, **kwargs):
+		user = kwargs.pop('user')
+		super(AppointmentForm, self).__init__(*args, **kwargs)
+		usero = User.objects.get(username__exact=user)
+		self.fields['calendar'].queryset = Calendar.objects.filter(calendar_owner=usero)
+
 	class Meta:
 		model = Appointment
 		exclude =['series']

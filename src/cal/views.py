@@ -188,7 +188,8 @@ def appointment_view(request, pk, template_name='cal/appointment_view.html'):
 
 @login_required
 def appointment_create(request):
-	form = AppointmentForm(request.POST or None)
+	user = request.user.username
+	form = AppointmentForm(request.POST or None, user=user)
 	if form.is_valid() and request.method == "POST" and request.is_ajax:
 		appointment = form.save()
 
@@ -341,3 +342,21 @@ def calshare_create(request, template_name='cal/generic_form.html'):
 
 	return render(request, template_name, {'form':form})
 
+@login_required
+def calshare_list(request, template_name='cal/calshare_list'):
+	shares = CalendarShare.objects.filter(calendar__calendar_owner=request.user)
+	data = {}
+	data['object_list'] = shares
+
+	return render(request, template_name, data)
+
+@login_required
+def calshare_delete(request, pk, template_name='cal/generic_delete.html'):
+	share = get_object_or_404(CalendarShare, pk=pk)
+
+	if request.method=='POST':
+		share.delete()
+
+		return redirect('mailaccount_list')
+
+	return render(request, template_name, {'object':share})	

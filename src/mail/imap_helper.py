@@ -2,6 +2,7 @@ import imaplib
 import email
 import re
 import hashlib
+from email.header import decode_header
 
 class ImapHelper(object):
 
@@ -69,10 +70,16 @@ class ImapHelper(object):
 			typ, data = self.server.uid('fetch', num, '(RFC822)')
 			raw_email = data[0][1]
 			msg = email.message_from_bytes(raw_email)
+			
+			subject, encoding = decode_header(msg['subject'])[0]
+			if encoding is None:
+				mail['subject'] = subject
+			else:
+				mail['subject'] = subject.decode(encoding)
+
 			mail['source'] = msg
 			mail['sender'] = msg['from']
-			mail['receiver'] = msg['to']
-			mail['subject'] = msg['subject']
+			mail['receiver'] = msg['to']			
 			ident = h.update(raw_email)
 			mail['identifier'] = h.hexdigest() 
 			mails.append(mail)

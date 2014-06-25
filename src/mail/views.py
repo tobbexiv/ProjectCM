@@ -12,6 +12,8 @@ from mail.forms import MailAccountForm, MailHostForm
 
 from mail.serializer import AccountSerializer 
 
+from django.core.exceptions import ObjectDoesNotExist
+
 @login_required
 def mailaccount_list(request, template_name='mail/mailaccount_list.html'):
 	accounts = MailAccount.objects.filter(mail_account_owner=request.user)	
@@ -146,7 +148,7 @@ def message_list(request, pk, template_name='mail/message_list.html'):
 	data = {}
 	data['account'] = str(account_data)
 
-	mailbox = request.POST.get('mailbox', False)
+	mailbox = request.GET.get('mailbox', False)
 	if mailbox is not False:
 		imap_helper.select_mailbox(mailbox)
 	else:
@@ -156,14 +158,16 @@ def message_list(request, pk, template_name='mail/message_list.html'):
 	try:
 		mb = MailBox.objects.get(mail_account=account_data.id, name=mailbox)
 	except ObjectDoesNotExist:
-			m = MailBox(name=str(mailbox), mail_account=mail_account)
-			m.save()
+			mb = MailBox(name=str(mailbox), mail_account=account_data)
+			mb.save()
 
 
 	messages = imap_helper.load_mail_from_mailbox()
+	print(messages)
 
 	for message in messages:		
-		check = Message.objects.filter(identifier=message['identifier'], mail_box=mb.id)
+		
+		check = Message.objects.filter(identifier=message['identifier'], mail_box=mb)
 		
 		if not check:
 			m = Message(mail_box=mb, sender=message['sender'], subject=message['subject'], identifier=message['identifier'], mail_source=message['source'])

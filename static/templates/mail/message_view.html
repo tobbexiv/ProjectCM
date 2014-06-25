@@ -4,8 +4,7 @@
 
 {% block content_right %}
 <ul>
-    {% for message in object_list %}
-    	<li>{{ message }}</li>
-    {% endfor %}
+    	<li>{{ message.mail_source }}</li>
+    
 </ul>
 {% endblock %}
