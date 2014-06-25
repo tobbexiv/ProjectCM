@@ -153,7 +153,12 @@ def message_list(request, pk, template_name='mail/message_list.html'):
 		imap_helper.select_mailbox('INBOX')
 		mailbox = 'INBOX'
 
-	mb = MailBox.objects.get(mail_account=account_data.id, name=mailbox)
+	try:
+		mb = MailBox.objects.get(mail_account=account_data.id, name=mailbox)
+	except ObjectDoesNotExist:
+			m = MailBox(name=str(mailbox), mail_account=mail_account)
+			m.save()
+
 
 	messages = imap_helper.load_mail_from_mailbox()
 
