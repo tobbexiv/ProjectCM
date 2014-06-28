@@ -16,5 +16,7 @@ urlpatterns = patterns('',
 	url(r'^series/delete/(?P<pk>\d+)$', 'cal.views.series_delete', name='series_delete'),
 	url(r'^series/view/(?P<pk>\d+)$', 'cal.views.series_view', name='series_view'),
 	url(r'^series/update/(?P<pk>\d+)$', 'cal.views.series_update', name='series_update'),
-	url(r'^calshare/create/?$', 'cal.views.calshare_create', name='calshare_create'),
+	url(r'^calshare/create/(?P<pk>\d+)?$', 'cal.views.calshare_create', name='calshare_create'),
+	url(r'^calshare/list/(?P<pk>\d+)?$', 'cal.views.calshare_list', name='calshare_list'),
+	url(r'^calshare/delete/(?P<pk>\d+)$', 'cal.views.calshare_delete', name='calshare_delete'),
 )

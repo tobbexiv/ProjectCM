@@ -24,18 +24,23 @@ class SeriesForm(ModelForm):
 		model = Series
 
 class CalShareForm(ModelForm):
-	
-	share_with = ModelChoiceField(queryset=User.objects.all())	
-
 	def __init__(self, *args, **kwargs):
 		user = kwargs.pop('user')
+		calendar = kwargs.pop('calendar')
 		super(CalShareForm, self).__init__(*args, **kwargs)
 		usero = User.objects.get(username__exact=user)
-		self.fields['calendar'].queryset = Calendar.objects.filter(calendar_owner=usero)
-	
+
+		existingShares = CalendarShare.objects.filter(calendar=calendar)
+		dont_show_user = []
+		dont_show_user.append(usero.pk)
+		for share in existingShares:
+			dont_show_user.append(share.share_with.pk)
+		
+		self.fields['share_with'].queryset = User.objects.all().exclude(pk__in=dont_show_user)
+
 	class Meta:
-		model = CalendarShare		
-		fields = ['calendar', 'share_with']
+		model = CalendarShare
+		fields = ['share_with']
 		
 
 

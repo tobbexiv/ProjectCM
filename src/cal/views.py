@@ -326,9 +326,12 @@ def series_delete(request, pk, template_name='cal/generic_delete.html'):
 
 
 @login_required
-def calshare_create(request, template_name='cal/generic_form.html'):
+def calshare_create(request, pk, template_name='cal/generic_form.html'):
 	user = request.user.username
-	form = CalShareForm(request.POST or None, user=user)
+	cal = Calendar.objects.get(pk=pk)
+	calshare = CalendarShare(calendar=cal)
+	form = CalShareForm(request.POST or None, instance=calshare, user=user, calendar=pk)
+
 	if form.is_valid() and request.method == "POST" and request.is_ajax:
 		calshare = form.save()
 
@@ -343,10 +346,11 @@ def calshare_create(request, template_name='cal/generic_form.html'):
 	return render(request, template_name, {'form':form})
 
 @login_required
-def calshare_list(request, template_name='cal/calshare_list'):
-	shares = CalendarShare.objects.filter(calendar__calendar_owner=request.user)
+def calshare_list(request, pk, template_name='cal/calshare_list.html'):
+	shares = CalendarShare.objects.filter(calendar__calendar_owner=request.user).filter(calendar=pk)
 	data = {}
 	data['object_list'] = shares
+	data['calendar_id'] = pk
 
 	return render(request, template_name, data)
 

@@ -422,7 +422,7 @@ var cal = new function Calendar() {
 			
 			_this.Overlay.show(title, null, callback);
 		};
-		
+
 		/**
 		 * Grant a user permissions for a calendar.
 		 * 
@@ -437,7 +437,47 @@ var cal = new function Calendar() {
 			var title	= 'Share calendar';
 
 			var callback = function(parent) {
-				_this.Helper.getForm('/calendar/calshare/create/', parent, function() {
+				_this.Helper.getForm('/calendar/calshare/create/' + calendarId, parent, function() {
+					setTimeout(_this.Cal.fetchAll, 500);
+				});
+			}
+			
+			_this.Overlay.show(title, null, callback);
+		};
+
+		/**
+		 * Remove the grant of permission for a user for a calendar.
+		 * 
+		 * @param	{int}		permId
+		 *   The id of the permission level.
+		 */
+		this.removePermission = function(permissionId) {
+			var title	= 'Delete permission';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/calshare/delete/' + permissionId, parent, function() {
+					setTimeout(_this.Cal.fetchAll, 500);
+				});
+			}
+			
+			_this.Overlay.show(title, null, callback);
+		};
+		
+		/**
+		 * Grant a user permissions for a calendar.
+		 * 
+		 * @param	{int}		calId
+		 *   Id of the calendar to grant permission.
+		 * @param	{string}	email
+		 *   Email of the user to grant permission.
+		 * @param	{int}		permId
+		 *   The id of the permission level.
+		 */
+		this.showPermissions = function(calendarId) {
+			var title	= 'Calendar shares';
+
+			var callback = function(parent) {
+				_this.Helper.getForm('/calendar/calshare/list/' + calendarId, parent, function() {
 					setTimeout(_this.Cal.fetchAll, 500);
 				});
 			}
@@ -1013,7 +1053,7 @@ var cal = new function Calendar() {
 				var show			= $('<input />', {'type': 'button', 'value': 'Show'}).appendTo(buttonWrapper);
 				var edit			= $('<input />', {'type': 'button', 'value': 'Edit'}).appendTo(buttonWrapper);
 				var deleteBtn		= $('<input />', {'type': 'button', 'value': 'Delete'}).appendTo(buttonWrapper);
-				var permissions		= $('<input />', {'type': 'button', 'value': 'Grant permissions'}).appendTo(buttonWrapper);
+				var shares			= $('<input />', {'type': 'button', 'value': 'Show shares'}).appendTo(buttonWrapper);
 				
 				show.click(function() {
 					_this.Cal.show(calendarId);
@@ -1027,8 +1067,8 @@ var cal = new function Calendar() {
 					_this.Cal.deleteCal(calendarId);
 				});
 
-				permissions.click(function() {
-					_this.Cal.grantPermission(calendarId);
+				shares.click(function() {
+					_this.Cal.showPermissions(calendarId);
 				});
 				
 				content.push(buttonWrapper);
