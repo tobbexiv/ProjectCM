@@ -22,8 +22,8 @@ class TestCaseLogin(LiveServerTestCase):
 
 
 	def test_2_new(self):
-		self._driver.get("http://localhost:8000/adressbook/")
-		self._driver.find_element_by_id('new').click()
+		self._driver.get("http://localhost:8000/adressbook/new")
+		#self._driver.find_element_by_id('new').click()
 		self._driver.find_element_by_id('id_name').send_keys("test")
 		self._driver.find_element_by_id('id_email').send_keys(str('test@email.com'))
 		self._driver.find_element_by_id('save').click()
