@@ -8,7 +8,7 @@ from mail.smtp_helper import SmtpHelper
 from django.forms.models import model_to_dict
 import json
 from mail.models import MailAccount, MailHost, Message, MailBox
-from mail.forms import MailAccountForm, MailHostForm
+from mail.forms import MailAccountForm, MailHostForm, MessageForm
 
 from mail.serializer import AccountSerializer 
 
@@ -191,24 +191,26 @@ def message_view(request, pk, template_name='mail/message_view.html'):
 
 @login_required
 def message_send(request):
-	if request.method == "POST" and request.is_ajax: 
-		json_data = json.loads(request.body.decode('utf-8'))
-		account_id = json_data['account']
-		recipient = json_data['recipient']
-		body = json_data['body']
+	messageForm = MessageForm(request.POST or None, user=request.user.username)
+	if request.method == "POST" and messageForm.is_valid():	
+		account_id = messageForm.cleaned_data['sender']
+		recipient = messageForm.cleaned_data['recipient']
+		subject = messageForm.cleaned_data['subject']
+		body = messageForm.cleaned_data['body']
 
-		account_data = MailAccount.objects.get(pk=account_id)
+		account_data = MailAccount.objects.get(pk=account_id.id)
 		smtp_helper = SmtpHelper(account_data)
 		sender = account_data.email
 
-		message = {}
+		mail = {}
 		mail['sender'] = sender
-		mail['destination'] = recipient
-		msg = ("From: %s\r\nTo: %s\r\n\r\n"
-       % (fromaddr, ", ".join(toaddrs.split())))
+		mail['destination'] = recipient		
+		msg = ("From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n"
+       % (sender, ", ".join(recipient.split()), subject))
 		mail['body'] = msg + body
 
 		smtp_helper.send_message(mail)
 
 		return HttpResponse("message send")	
 
+	return render(request, 'mail/message_form.html', {'form':messageForm})

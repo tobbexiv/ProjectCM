@@ -12,4 +12,6 @@ urlpatterns = patterns('',
 	url(r'^mailboxes/list/(?P<mail_account_id>\d+)$', 'mail.views.mailboxes_list', name='mailboxes_list'),
 
 	url(r'^messages/view/(?P<pk>\d+)$', 'mail.views.message_view', name='message_view'),
+
+	url(r'^message/send/?$', 'mail.views.message_send', name='message_send'),
 )
