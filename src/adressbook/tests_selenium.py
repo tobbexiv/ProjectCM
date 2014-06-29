@@ -10,6 +10,7 @@ class TestCaseLogin(LiveServerTestCase):
 	def setUpClass(cls):
 		cls._password_peter = '123'		
 		cls._driver = webdriver.PhantomJS()
+		cls._driver.set_window_size(1124, 850)
 
 
 	def test_1_login(self):
