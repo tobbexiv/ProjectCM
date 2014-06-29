@@ -42,25 +42,25 @@ class AdressbookViewsTestCaseWithoutLogin(TestCase):
 	#test pages without login, should return 302 redirect (to login page)
 	def test_index_wo_login(self):
 		resp = self.client.get('/adressbook/')
-		self.assertRedirects(resp, '/accounts/login/?next=/adressbook/', status_code=302, target_status_code=200, msg_prefix='')	
+		self.assertRedirects(resp, '/account/login/?next=/adressbook/', status_code=302, target_status_code=200, msg_prefix='')	
 
 	def test_show_wo_login(self):
 		resp = self.client.get('/adressbook/view/1')
-		self.assertRedirects(resp, '/accounts/login/?next=/adressbook/view/1', status_code=302, target_status_code=200, msg_prefix='')	
+		self.assertRedirects(resp, '/account/login/?next=/adressbook/view/1', status_code=302, target_status_code=200, msg_prefix='')	
 
 	def test_new_wo_login(self):
 		resp = self.client.get('/adressbook/new')
-		self.assertRedirects(resp, '/accounts/login/?next=/adressbook/new', status_code=302, target_status_code=200, msg_prefix='')	   
+		self.assertRedirects(resp, '/account/login/?next=/adressbook/new', status_code=302, target_status_code=200, msg_prefix='')	   
 
 
 	def test_edit_wo_login(self):
 		resp = self.client.get('/adressbook/edit/1')
-		self.assertRedirects(resp, '/accounts/login/?next=/adressbook/edit/1', status_code=302, target_status_code=200, msg_prefix='')
+		self.assertRedirects(resp, '/account/login/?next=/adressbook/edit/1', status_code=302, target_status_code=200, msg_prefix='')
 
 
 	def test_delete_wo_login(self):
 		resp = self.client.get('/adressbook/delete/1')
-		self.assertRedirects(resp, '/accounts/login/?next=/adressbook/delete/1', status_code=302, target_status_code=200, msg_prefix='')
+		self.assertRedirects(resp, '/account/login/?next=/adressbook/delete/1', status_code=302, target_status_code=200, msg_prefix='')
 
 
 
