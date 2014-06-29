@@ -27,7 +27,7 @@ class TestCaseLogin(LiveServerTestCase):
 		self._driver.find_element_by_id('id_name').send_keys("test")
 		self._driver.find_element_by_id('id_email').send_keys(str('test@email.com'))
 		time.sleep(5)
-		self._driver.find_element_by_id('save').click()
+		self._driver.find_element_by_xpath("//input[@id='save']").click()
 		body = self._driver.find_element_by_tag_name('body')
 		self.assertIn('test', body.text)
 		self.assertIn('test@email.com', body.text)
