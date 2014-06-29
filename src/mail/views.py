@@ -211,6 +211,12 @@ def message_send(request):
 
 		smtp_helper.send_message(mail)
 
-		return HttpResponse("message send")	
+		response = {}
+		response['userName'] = request.user.username
+		response['success'] = True
+		response['data'] = 'Mail successfully sent'
+
+		json_response = json.dumps(response)
+		return HttpResponse(json_response, content_type="application/json")
 
 	return render(request, 'mail/message_form.html', {'form':messageForm})

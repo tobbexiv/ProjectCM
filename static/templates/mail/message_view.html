@@ -1,10 +1,22 @@
 {% extends "base.html" %}
 
-{% block menu_active_mailaccount %}active{% endblock %}
+{% block css_imports %}
+	@import "{{ STATIC_FILES }}css/styles_mail.css" screen;
+{% endblock %}
+
+{% block js_imports %}
+	<script type="text/javascript" src="{{ STATIC_FILES }}js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="{{ STATIC_FILES }}js/mail.js"></script>
+{% endblock %}
+
+{% block menu_active_maillist %}active{% endblock %}
+
+{% block info_line %}<a href="javascript:mail.Message.showSendForm();">Send mail</a>{% endblock %}
 
 {% block content_right %}
-<ul>
-    	<li>{{ message.mail_source }}</li>
-    
-</ul>
+Sender: {{ message.sender }}
+Subject: {{ message.subject }}
+<br>
+<br>
+{{ message.mail_source }}
 {% endblock %}

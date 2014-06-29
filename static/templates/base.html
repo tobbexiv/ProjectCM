@@ -28,7 +28,7 @@
 							<li class="menu_item {% block menu_active_calendar %}{% endblock %}"><a href="{% url 'cal.views.calendar_base' %}">Calendar</a></li>
 							<li class="menu_item {% block menu_active_adressbook %}{% endblock %}"><a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a></li>
 							<li class="menu_item {% block menu_active_mailaccount %}{% endblock %}"><a href="{% url 'mail.views.mailaccount_list' %}">Mail Accounts</a></li>
-							<li class="menu_item"><a href="{% url 'mail.views.mailaccount_select' %}">Show Messages</a></li>
+							<li class="menu_item {% block menu_active_maillist %}{% endblock %}"><a href="{% url 'mail.views.mailaccount_select' %}">Show Messages</a></li>
 						</ul>
 					{% endblock %}
 				</div>

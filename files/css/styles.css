@@ -192,6 +192,10 @@ body {
 	margin: 6px 0px;
 }
 
+#info_line a {
+	color: #ffffff;
+}
+
 #content_right > .bottom {
     margin-top: 5px;
     position: relative;
