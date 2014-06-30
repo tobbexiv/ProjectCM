@@ -19,7 +19,7 @@ class TestCaseLogin(LiveServerTestCase):
 		self._driver.find_element_by_id('id_password').send_keys(self._password_peter)
 		self._driver.find_element_by_id('login').click();
 		body = self._driver.find_element_by_class_name('page_title')
-		self.assertIn('Main Page', body.text)
+		self.assertIn('Project CM', body.text)
 
 	def test_3_logout(self):
 		self._driver.get("http://localhost:8000/")
