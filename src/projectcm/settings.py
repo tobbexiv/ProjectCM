@@ -104,7 +104,7 @@ SOUTH_TESTS_MIGRATE = False
 
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static", "templates"),
+    os.path.join(BASE_DIR, "..", "static", "templates"),
 )
 
 # Timeout for registration
