@@ -1,1 +1,1 @@
-web: gunicorn projectcm.wsgi
+web: python src/manage.py runserver
