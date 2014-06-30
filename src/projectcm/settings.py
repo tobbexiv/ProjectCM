@@ -87,7 +87,7 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-STATIC_ROOT = 'staticfiles'
+STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
 
 MEDIA_ROOT = os.path.join(BASE_DIR, "..", "files") 
@@ -96,7 +96,7 @@ ADMIN_MEDIA_PREFIX = '/files/admin/'
 
 # Template location
 TEMPLATE_DIRS = (
-	os.path.join(os.path.dirname(BASE_DIR), "..", "static", "templates"),
+	os.path.join(os.path.dirname(BASE_DIR), "static", "templates"),
 )
 
 # Disable south for unit test runs
