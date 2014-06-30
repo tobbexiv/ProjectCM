@@ -1,0 +1,5 @@
+<form method="post">
+	{% csrf_token %}
+    Are you sure you want to delete "{{ object }}"?
+    <input type="button" value="Confirm" id="save" /><input type="button" value="Cancel" onclick="cal.Overlay.hide();" />
+</form>

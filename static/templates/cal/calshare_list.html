@@ -1,0 +1,6 @@
+<ul>
+    {% for calshare in object_list %}
+    	<li>{{ calshare }}: <a href="javascript:cal.Cal.removePermission({{ calshare.id }});">delete</a></li>
+    {% endfor %}
+</ul>
+<a href="javascript:cal.Cal.grantPermission({{ calendar_id }});" id="new">New</a>

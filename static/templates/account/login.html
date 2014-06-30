@@ -1,0 +1,10 @@
+{% extends "account/login_register_base.html" %}
+
+{% block content %}
+<form method="POST" action="{% url 'django.contrib.auth.views.login' %}" id="login_form">
+	{% csrf_token %}
+    {{ form.as_p }}
+    <input type="hidden" name="next" value="{{ next }}" />
+	<input type="submit" value="login" id="login"/>
+</form>
+{% endblock %}

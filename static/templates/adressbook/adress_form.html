@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+
+{% block menu_active_adressbook %}active{% endblock %}
+
+{% block content_right %}
+<form method="post">
+	{% csrf_token %}
+    {{ form.as_p }}
+    <input type="submit" value="Save" id="save" /><input type="reset" value="Reset" id="reset" /><a href="{% url 'adress_list' %}" class="cancel"><input type="button" value="Cancel" /></a>
+</form>
+{% endblock %}

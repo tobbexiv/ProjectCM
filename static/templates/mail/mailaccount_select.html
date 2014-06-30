@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block menu_active_maillist %}active{% endblock %}
+
+{% block content_right %}
+<ul>
+    {% for account in object_list %}
+    	<li>{{ account }}:  <a href="{% url "message_list" account.id %}">show messages</a></li>
+    {% endfor %}
+</ul>
+<a href="{% url "mailaccount_list" %}" id="new">Edit Mailaccounts</a>
+{% endblock %}

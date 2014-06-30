@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block menu_active_mailaccount %}active{% endblock %}
+
+{% block content_right %}
+<form method="post">{% csrf_token %}
+	<b>Account</b>
+    {{ mailaccount.as_p }}
+    <b>Send Host</b>
+    {{ send_host.as_p }}
+    <b>Retrieve Host</b>
+    {{ retrieve_host.as_p }}
+    <input type="submit" value="Save" id="save" /><input type="reset" value="Reset" id="reset" /><a href="{% url 'mailaccount_list' %}" class="cancel"><input type="button" value="Cancel" /></a>
+</form>
+{% endblock %}

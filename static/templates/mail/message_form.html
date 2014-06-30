@@ -1,0 +1,5 @@
+<form method="post">
+	{% csrf_token %}
+    {{ form.as_p }}
+    <input type="button" value="Send" id="save" /><input type="reset" value="Reset" id="reset" /><input type="button" value="Cancel" onclick="mail.Overlay.hide();" />
+</form>

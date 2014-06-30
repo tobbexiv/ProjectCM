@@ -11,7 +11,7 @@ class AdressForm(ModelForm):
 		
 
 @login_required
-def adress_list(request, template_name='adress_list.html'):
+def adress_list(request, template_name='adressbook/adress_list.html'):
 	adresses = Adress.objects.filter(contact_owner=request.user)
 	data = {}
 	data['object_list'] = adresses
@@ -19,14 +19,14 @@ def adress_list(request, template_name='adress_list.html'):
 	return render(request, template_name, data)
 
 @login_required
-def adress_view(request, pk, template_name='adress_show.html'):
+def adress_view(request, pk, template_name='adressbook/adress_view.html'):
 	adress = get_object_or_404(Adress, pk=pk)	
 
 	return render(request, template_name, {'adress':adress})
 
 
 @login_required
-def adress_create(request, template_name='adress_form.html'):
+def adress_new(request, template_name='adressbook/adress_form.html'):
 	form = AdressForm(request.POST or None)
 	if form.is_valid():
 		adress = form.save(commit=False)
@@ -38,7 +38,7 @@ def adress_create(request, template_name='adress_form.html'):
 	return render(request, template_name, {'form':form})
 
 @login_required
-def adress_update(request, pk, template_name='adress_form.html'):
+def adress_edit(request, pk, template_name='adressbook/adress_form.html'):
 	adress = get_object_or_404(Adress, pk=pk)
 	form = AdressForm(request.POST or None, instance=adress)
 	if form.is_valid():
@@ -48,7 +48,7 @@ def adress_update(request, pk, template_name='adress_form.html'):
 	return render(request, template_name, {'form':form})
 
 @login_required
-def adress_delete(request, pk, template_name='adress_delete.html'):
+def adress_delete(request, pk, template_name='adressbook/adress_delete.html'):
 	adress = get_object_or_404(Adress, pk=pk)    
 	if request.method=='POST':
 		adress.delete()

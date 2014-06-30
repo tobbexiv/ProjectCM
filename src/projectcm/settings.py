@@ -10,6 +10,7 @@ https://docs.djangoproject.com/en/1.6/ref/settings/
 
 # Build paths inside the project like this: os.path.join(BASE_DIR, ...)
 import os
+
 BASE_DIR = os.path.dirname(os.path.dirname(__file__))
 
 
@@ -38,12 +39,13 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.sites',
     'adressbook',
-    'accounts',
+    'account',
     'mail',
     'south',
     'allauth',
     'allauth.account',
     'allauth.socialaccount',
+    'cal',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -85,9 +87,12 @@ USE_TZ = True
 
 
 # Static files (CSS, JavaScript, Images)
-# https://docs.djangoproject.com/en/1.6/howto/static-files/
-
+STATIC_ROOT = 'static'
 STATIC_URL = '/static/'
+
+MEDIA_ROOT = os.path.join(BASE_DIR, "..", "files") 
+MEDIA_URL = '/files/'
+ADMIN_MEDIA_PREFIX = '/files/admin/'
 
 # Template location
 TEMPLATE_DIRS = (
@@ -99,7 +104,7 @@ SOUTH_TESTS_MIGRATE = False
 
 
 STATICFILES_DIRS = (
-    os.path.join(BASE_DIR, "static", "templates"),
+    os.path.join(BASE_DIR, "..", "static", "templates"),
 )
 
 # Timeout for registration
@@ -129,3 +134,8 @@ AUTHENTICATION_BACKENDS = (
 SITE_ID = 1
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
+
+#deactivate email verification
+ACCOUNT_EMAIL_VERIFICATION = "none"
+
+LOGIN_URL = '/account/login/?next='

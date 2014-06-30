@@ -1,23 +1,31 @@
 from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.decorators import login_required
+from django.core import serializers
 
+from django.http import HttpResponse
 from mail.imap_helper import ImapHelper
+from mail.smtp_helper import SmtpHelper
+from django.forms.models import model_to_dict
+import json
+from mail.models import MailAccount, MailHost, Message, MailBox
+from mail.forms import MailAccountForm, MailHostForm, MessageForm
 
-from mail.models import MailAccount, MailHost, Message
-from mail.forms import MailAccountForm, MailHostForm
+from mail.serializer import AccountSerializer 
+
+from django.core.exceptions import ObjectDoesNotExist
 
 @login_required
-def mailaccount_list(request, template_name='mailaccount_list.html'):
+def mailaccount_list(request, template_name='mail/mailaccount_list.html'):
 	accounts = MailAccount.objects.filter(mail_account_owner=request.user)	
+
 	data = {}
-	data['title'] = "Mail Accounts"
 	data['object_list'] = accounts
 
 	return render(request, template_name, data)
 
 
 @login_required
-def mailaccount_view(request, pk, template_name='mailaccount_view.html'):
+def mailaccount_view(request, pk, template_name='mail/mailaccount_view.html'):
 	account = MailAccount.objects.get(pk=pk)
 	send_host = MailHost.objects.get(pk=account.send_host.id)
 	retrieve_host = MailHost.objects.get(pk=account.retrieve_host.id)	
@@ -31,7 +39,7 @@ def mailaccount_view(request, pk, template_name='mailaccount_view.html'):
 
 
 @login_required
-def mailaccount_create(request, template_name='mailaccount_form.html'):
+def mailaccount_new(request, template_name='mail/mailaccount_form.html'):
 	mailaccount_form = MailAccountForm(request.POST or None)
 	mailhost_send_form = MailHostForm(request.POST or None, prefix='send')
 	mailhost_retrieve_form = MailHostForm(request.POST or None, prefix='retrieve')
@@ -59,7 +67,7 @@ def mailaccount_create(request, template_name='mailaccount_form.html'):
 
 
 @login_required
-def mailaccount_delete(request, pk, template_name='mailaccount_delete.html'):
+def mailaccount_delete(request, pk, template_name='mail/mailaccount_delete.html'):
 	account = get_object_or_404(MailAccount, pk=pk)
 	retrieve_host = get_object_or_404(MailHost, retrieve_host_of=account)
 	send_host = get_object_or_404(MailHost, send_host_of=account)
@@ -74,7 +82,7 @@ def mailaccount_delete(request, pk, template_name='mailaccount_delete.html'):
 
 
 @login_required
-def mailaccount_update(request, pk, template_name='mailaccount_form.html'):
+def mailaccount_edit(request, pk, template_name='mail/mailaccount_form.html'):
 	account = get_object_or_404(MailAccount, pk=pk)
 	retrieve_host = get_object_or_404(MailHost, retrieve_host_of=account)
 	send_host = get_object_or_404(MailHost, send_host_of=account)
@@ -106,7 +114,7 @@ def mailaccount_update(request, pk, template_name='mailaccount_form.html'):
 
 
 @login_required
-def select_mailaccount(request, template_name='select_mailaccount.html'):
+def mailaccount_select(request, template_name='mail/mailaccount_select.html'):
 	accounts = MailAccount.objects.filter(mail_account_owner=request.user)	
 	data = {}
 	data['title'] = "Select Mail Account"
@@ -114,24 +122,101 @@ def select_mailaccount(request, template_name='select_mailaccount.html'):
 
 	return render(request, template_name, data)
 
+@login_required
+def mailboxes_list(request, mail_account_id):
+	mail_account = MailAccount.objects.get(pk=mail_account_id)
+	imap_helper = ImapHelper(mail_account)
+	mailboxes_server = imap_helper.load_mailboxes()
+
+	for mb in mailboxes_server:
+		if not MailBox.objects.filter(name=str(mb), mail_account=mail_account):
+			m = MailBox(name=str(mb), mail_account=mail_account)
+			m.save()
+			
+	
+	mailboxes_local = MailBox.objects.filter(mail_account=mail_account)
+	json_data = serializers.serialize('json', mailboxes_local)
+
+	return HttpResponse(json_data, content_type="application/json") 
+
 
 @login_required
-def message_list(request, pk, template_name='message_list.html'):
+def message_list(request, pk, template_name='mail/message_list.html'):
 	account_data = MailAccount.objects.get(pk=pk)
 	
 	imap_helper = ImapHelper(account_data)
 	data = {}
 	data['account'] = str(account_data)
-	imap_helper.select_mailbox('inbox')
+
+	mailbox = request.GET.get('mailbox', False)
+	if mailbox is not False:
+		imap_helper.select_mailbox(mailbox)
+	else:
+		imap_helper.select_mailbox('INBOX')
+		mailbox = 'INBOX'
+
+	try:
+		mb = MailBox.objects.get(mail_account=account_data.id, name=mailbox)
+	except ObjectDoesNotExist:
+			mb = MailBox(name=str(mailbox), mail_account=account_data)
+			mb.save()
+
 
 	messages = imap_helper.load_mail_from_mailbox()
+	print(messages)
 
-	for message in messages:
-		m = Message(mail_account=account_data, mail_source=message)
-		m.save()
+	for message in messages:		
+		
+		check = Message.objects.filter(identifier=message['identifier'], mail_box=mb)
+		
+		if not check:
+			m = Message(mail_box=mb, sender=message['sender'], subject=message['subject'], identifier=message['identifier'], mail_source=message['source'])
+			m.save()
 
-	ms = Message.objects.filter(mail_account=account_data)
+	ms = Message.objects.filter(mail_box=mb)
 
 	data['object_list'] = ms
 
 	return render(request, template_name, data)
+
+
+@login_required
+def message_view(request, pk, template_name='mail/message_view.html'):
+	message = Message.objects.get(pk=pk)
+	data = {}
+	data['message'] = message 
+
+	return render(request, template_name, data)
+
+
+@login_required
+def message_send(request):
+	messageForm = MessageForm(request.POST or None, user=request.user.username)
+	if request.method == "POST" and messageForm.is_valid():	
+		account_id = messageForm.cleaned_data['sender']
+		recipient = messageForm.cleaned_data['recipient']
+		subject = messageForm.cleaned_data['subject']
+		body = messageForm.cleaned_data['body']
+
+		account_data = MailAccount.objects.get(pk=account_id.id)
+		smtp_helper = SmtpHelper(account_data)
+		sender = account_data.email
+
+		mail = {}
+		mail['sender'] = sender
+		mail['destination'] = recipient		
+		msg = ("From: %s\r\nTo: %s\r\nSubject: %s\r\n\r\n"
+       % (sender, ", ".join(recipient.split()), subject))
+		mail['body'] = msg + body
+
+		smtp_helper.send_message(mail)
+
+		response = {}
+		response['userName'] = request.user.username
+		response['success'] = True
+		response['data'] = 'Mail successfully sent'
+
+		json_response = json.dumps(response)
+		return HttpResponse(json_response, content_type="application/json")
+
+	return render(request, 'mail/message_form.html', {'form':messageForm})

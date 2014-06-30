@@ -1,0 +1,8 @@
+django
+south
+coveralls
+selenium
+radon
+django-allauth
+django_dajax
+python-dateutil

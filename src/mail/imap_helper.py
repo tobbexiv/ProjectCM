@@ -1,5 +1,8 @@
 import imaplib
 import email
+import re
+import hashlib
+from email.header import decode_header
 
 class ImapHelper(object):
 
@@ -40,8 +43,15 @@ class ImapHelper(object):
 
 	def load_mailboxes(self):
 		if self.server is not None:			
-			mailboxes = self.server.list()
-			return mailboxes
+			typ, mailboxes = self.server.list()
+			mailbox_names = []			
+
+			for box in mailboxes:			
+				mailbox_name = re.split('"', str(box))
+				mailbox_names.append(mailbox_name[3])
+				
+				
+			return mailbox_names
 
 
 	def select_mailbox(self, mailbox):
@@ -51,12 +61,29 @@ class ImapHelper(object):
 
 	def load_mail_from_mailbox(self):
 		mails = []
+		
 		typ, data = self.server.uid('search', None, "ALL")
+		h = hashlib.sha256()
 
 		for num in data[0].split():
+			mail = {}
 			typ, data = self.server.uid('fetch', num, '(RFC822)')
 			raw_email = data[0][1]
-			mails.append(email.message_from_bytes(raw_email))
+			msg = email.message_from_bytes(raw_email)
+			
+			subject, encoding = decode_header(msg['subject'])[0]
+			if encoding is None:
+				mail['subject'] = subject
+			else:
+				mail['subject'] = subject.decode(encoding)
+
+			mail['source'] = msg
+			mail['sender'] = msg['from']
+			mail['receiver'] = msg['to']			
+			ident = h.update(raw_email)
+			mail['identifier'] = h.hexdigest() 
+			mails.append(mail)
+		
 
 		return mails	
 

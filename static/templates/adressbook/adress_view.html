@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% block menu_active_adressbook %}active{% endblock %}
+
+{% block content_right %}
+<ul style="list-style-type:none">
+	<li>Name: {{ adress.name }}</li>
+	<li>Street: {{ adress.street }} {{ adress.house_nr }}</li>
+	<li>Town: {{ adress.zip_code }} {{ adress.town_name }}</li>
+	<li>Country: {{ adress.country }}</li>
+	<li>Telephone: {{ adress.telephone_nr }}</li>
+	<li>Email: {{ adress.email }}</li>	
+</ul>
+<a href="{% url 'adressbook.views.adress_list' %}">back</a>
+{% endblock %}
