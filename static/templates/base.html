@@ -19,7 +19,7 @@
 		<div id="message_bar"></div>
 		<div id="wrapper">
 			<div id="header">
-				<div class="page_title">{{ title|default:"ProjectCM" }}</div>
+				<div class="page_title">Project CM</div>
 				<div id="navbar">
 					{% block menu %}
 						<ul>
@@ -29,6 +29,9 @@
 							<li class="menu_item {% block menu_active_adressbook %}{% endblock %}"><a href="{% url 'adressbook.views.adress_list' %}">Adressbook</a></li>
 							<li class="menu_item {% block menu_active_mailaccount %}{% endblock %}"><a href="{% url 'mail.views.mailaccount_list' %}">Mail Accounts</a></li>
 							<li class="menu_item {% block menu_active_maillist %}{% endblock %}"><a href="{% url 'mail.views.mailaccount_select' %}">Show Messages</a></li>
+							{% if request.user.is_superuser %}
+								<li class="menu_item"><a href="/admin">Admin Panel</a></li>
+							{% endif %}
 						</ul>
 					{% endblock %}
 				</div>

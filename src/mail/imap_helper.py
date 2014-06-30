@@ -70,7 +70,7 @@ class ImapHelper(object):
 			typ, data = self.server.uid('fetch', num, '(RFC822)')
 			raw_email = data[0][1]
 			msg = email.message_from_bytes(raw_email)
-			
+			print(msg)
 			subject, encoding = decode_header(msg['subject'])[0]
 			if encoding is None:
 				mail['subject'] = subject

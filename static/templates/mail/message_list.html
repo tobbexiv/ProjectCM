@@ -1,6 +1,17 @@
 {% extends "base.html" %}
 
+{% block css_imports %}
+	@import "{{ STATIC_FILES }}css/styles_mail.css" screen;
+{% endblock %}
+
+{% block js_imports %}
+	<script type="text/javascript" src="{{ STATIC_FILES }}js/jquery.cookie.js"></script>
+	<script type="text/javascript" src="{{ STATIC_FILES }}js/mail.js"></script>
+{% endblock %}
+
 {% block menu_active_maillist %}active{% endblock %}
+
+{% block info_line %}<a href="javascript:mail.Message.showSendForm();">Send mail</a>{% endblock %}
 
 {% block content_right %}
 <ul>

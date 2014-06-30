@@ -58,14 +58,13 @@
 	z-index: 9001;
 	position: fixed;
 	visibility: visible;
-	top: 50px;
-	left: 50px;
-	width: calc(100% -100px);
-	height: calc(100% - 100px);
+	left: calc(50% - 250px);
+	width: 550px;
+	height: calc(100% - 50px);
 	padding: 0px;
 	text-align: left;
-	background-color: white;
-	overflow: hidden;
+	background-color:white;
+	overflow:hidden;
 }
 
 #overlay_panel_header{
