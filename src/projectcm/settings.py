@@ -96,7 +96,7 @@ ADMIN_MEDIA_PREFIX = '/files/admin/'
 
 # Template location
 TEMPLATE_DIRS = (
-	os.path.join(os.path.dirname(BASE_DIR), "static", "templates"),
+	os.path.join(os.path.dirname(BASE_DIR), "..", "static", "templates"),
 )
 
 # Disable south for unit test runs
