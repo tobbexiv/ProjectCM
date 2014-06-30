@@ -5,4 +5,4 @@ selenium
 radon
 django-allauth
 django_dajax
-python-dateutils
+python-dateutil
