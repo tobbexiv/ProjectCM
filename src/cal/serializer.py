@@ -24,8 +24,8 @@ class DateTimeEncoder(json.JSONEncoder):
 			ret['color'] = obj.calendar.color
 			ret['name'] = obj.title
 			ret['notes'] = obj.description
-			ret['starttime'] = obj.start_date
-			ret['endtime'] = obj.end_date
+			ret['starttime'] = obj.start_date.strftime("%Y-%m-%dT%H:%M:%S.000+0200")
+			ret['endtime'] = obj.end_date.strftime("%Y-%m-%dT%H:%M:%S.000+0200")
 			
 			return ret      
 

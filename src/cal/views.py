@@ -114,14 +114,12 @@ def appointment_list(request):
 			for appo in appointments:						
 				all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))  
 				
-			series = Appointment.objects.filter(calendar=calendar, start_date__lte=to_date, end_date__gte=from_date, series__first_occurence__lte=to_date, series__last_occurence__gte=from_date)	
+			series = Appointment.objects.filter(calendar=calendar, series__first_occurence__lte=to_date, series__last_occurence__gte=from_date)	
 			
 			for appo in series:					
-					all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))				
+					all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))
 
-					if appo.series.reoccurences == 'daily':
-
-						
+					if appo.series.reoccurences == 'daily' and to_date != from_date:
 						if appo.series.first_occurence > datetime.date(from_date):
 							new_from_date = appo.series.first_occurence
 						else:
@@ -143,7 +141,6 @@ def appointment_list(request):
 							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 			
 					elif appo.series.reoccurences == 'weekly':				
-
 						if appo.series.first_occurence > datetime.date(from_date):
 							new_from_date = appo.series.first_occurence
 						else:
@@ -163,7 +160,6 @@ def appointment_list(request):
 
 							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 							
-						
 					elif appo.series.reoccurences == 'monthly':
 						pass        
 
@@ -205,8 +201,9 @@ def appointment_create(request):
 
 @login_required
 def appointment_update(request, pk, template_name='cal/generic_form.html'):
+	user = request.user.username
 	appointment = get_object_or_404(Appointment, pk=pk)
-	form = AppointmentForm(request.POST or None, instance=appointment)
+	form = AppointmentForm(request.POST or None, instance=appointment, user=user)
 	if form.is_valid() and request.method == "POST" and request.is_ajax:
 		form.save()
 		response = {}
@@ -249,7 +246,8 @@ def series_view(request, pk, template_name='cal/series_view.html'):
 
 @login_required
 def series_create(request, template_name='cal/series_form.html'):
-	appointment_form = AppointmentForm(request.POST or None)
+	user = request.user.username
+	appointment_form = AppointmentForm(request.POST or None, user=user)
 	series_form = SeriesForm(request.POST or None)
 
 	if appointment_form.is_valid() and series_form.is_valid():
@@ -275,9 +273,10 @@ def series_create(request, template_name='cal/series_form.html'):
 
 @login_required
 def series_update(request, pk, template_name='cal/series_form.html'):
+	user = request.user.username
 	appointment = get_object_or_404(Appointment, pk=pk)
 	series = get_object_or_404(Series, pk=appointment.series.id)
-	appointment_form = AppointmentForm(request.POST or None, instance=appointment)
+	appointment_form = AppointmentForm(request.POST or None, instance=appointment, user=user)
 	series_form = SeriesForm(request.POST or None, instance=series)
 
 	if appointment_form.is_valid() and series_form.is_valid() and request.method == 'POST' and request.is_ajax:

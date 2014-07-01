@@ -1266,7 +1266,7 @@ var cal = new function Calendar() {
 				
 				for(var i = 0; i < maxParallel; i++) {
 					var wrapper = $('<div />', {'class': 'calendar_appointment_column'}).appendTo(box);
-					wrapper.css('width', 100 / maxParallel + '%');
+					wrapper.css({'width': 100 / maxParallel + '%', 'marginLeft': i * 100 / maxParallel + '%'});
 					
 					$(dates[i]).each(function(index, date) {
 						var marker	= '<div class="marker" style="background-color: #' + date.color + ';"></div>';
@@ -1281,7 +1281,7 @@ var cal = new function Calendar() {
 						
 						notes		= notes != '' ? '<br><span class="notes"' + (notes_l != '' ? (' title="' + notes_l + '"') : '') + '>' + notes + '</span>' : '';
 						
-						var start	= new Date(date.starttime * 1000);
+						var start	= new Date(date.starttime);
 						var top		= start.getHours() * 60 + start.getMinutes();
 						var height	= (date.endtime - date.starttime) / 60;
 						
@@ -1307,7 +1307,7 @@ var cal = new function Calendar() {
 				}
 				
 				for(var i = 0; i < data.length; i++) {
-					var index = (new Date(data[i].starttime * 1000)).getDay();
+					var index = (new Date(data[i].starttime)).getDay();
 					index--;
 					index = index < 0 ? index + 7 : index;
 					dataPerDay[index].push(data[i]);
@@ -1321,7 +1321,7 @@ var cal = new function Calendar() {
 					
 					for(var i = 0; i < maxParallel; i++) {
 						var wrapper = $('<div />', {'class': 'calendar_appointment_column'}).appendTo(box);
-						wrapper.css('width', 100 / maxParallel + '%');
+						wrapper.css({'width': 100 / maxParallel + '%', 'marginLeft': i * 100 / maxParallel + '%'});
 						
 						$(dates[i]).each(function(index, date) {
 							var marker	= '<div class="marker" style="background-color: #' + date.color + ';"></div>';
@@ -1336,7 +1336,7 @@ var cal = new function Calendar() {
 							
 							notes		= notes != '' ? '<br><span class="notes"' + (notes_l != '' ? (' title="' + notes_l + '"') : '') + '>' + notes + '</span>' : '';
 							
-							var start	= new Date(date.starttime * 1000);
+							var start	= new Date(date.starttime);
 							var top		= start.getHours() * 60 + start.getMinutes();
 							var height	= (date.endtime - date.starttime) / 60;
 							
@@ -1363,7 +1363,7 @@ var cal = new function Calendar() {
 				}
 				
 				for(var i = 0; i < data.length; i++) {
-					var index = (new Date(data[i].starttime * 1000)).getDate() - 1;
+					var index = (new Date(data[i].starttime)).getDate() - 1;
 					dataPerDay[index].push(data[i]);
 				}
 				
@@ -1371,8 +1371,8 @@ var cal = new function Calendar() {
 					var box = $('.calendar_month_item:not(.inactive):eq(' + i + ') .calendar_month_item_content');
 					
 					$(dataPerDay[i]).each(function(index, date) {
-						var start	= new Date(date.starttime * 1000);
-						var end		= new Date(date.endtime * 1000);
+						var start	= new Date(date.starttime);
+						var end		= new Date(date.endtime);
 						var marker	= '<div class="marker" style="background-color: #' + date.color + ';"></div>';
 						var time	= '<span class="time">' + _this.Helper.getFormattedTime(start, false, true) + ' - ' + _this.Helper.getFormattedTime(end, false, true) + '</span>';
 						var name	= '<br><span class="name">' + date.name + '</span>';
@@ -1398,8 +1398,8 @@ var cal = new function Calendar() {
 				var listNext	= $('<div />', {'id': 'calendar_list_next'}).appendTo(calBox);
 				
 				$(data).each(function(index, date) {
-					var start	= new Date(date.starttime * 1000);
-					var end		= new Date(date.endtime * 1000);
+					var start	= new Date(date.starttime);
+					var end		= new Date(date.endtime);
 					
 					var marker		= '<div class="marker" style="background-color: #' + date.color + ';"></div>';
 					var time		= '<span class="time">' + _this.Helper.getFormattedTime(start, true, true) + ' - ' + _this.Helper.getFormattedTime(end, false, true) + '</span>';

@@ -213,6 +213,7 @@
 .calendar_appointment_column {
 	background-color: transparent;
 	float: left;
+	position: relative;
 }
 
 .calendar_appointment {
@@ -220,7 +221,7 @@
 	color: #ff7500;
 	font-size: 11pt;
 	font-weight: bold;
-	position: relative;
+	position: absolute;
 	margin-left: 2%;	
 	width: calc(96% - 18px);
 	padding-left: 18px;
