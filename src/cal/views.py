@@ -116,54 +116,57 @@ def appointment_list(request):
 				
 			series = Appointment.objects.filter(calendar=calendar, series__first_occurence__lte=to_date, series__last_occurence__gte=from_date)	
 			
-			for appo in series:					
-					all_appointments.append(json.dumps(appo, cls=DateTimeEncoder))
+			for appo in series:
+					if appo.series.first_occurence > datetime.date(from_date):
+						new_from_date = appo.series.first_occurence
+					else:
+						new_from_date = datetime.date(from_date)
 
-					if appo.series.reoccurences == 'daily' and to_date != from_date:
-						if appo.series.first_occurence > datetime.date(from_date):
-							new_from_date = appo.series.first_occurence
-						else:
-							new_from_date = datetime.date(from_date)
+					if appo.series.last_occurence < datetime.date(to_date):
+						new_to_date = appo.series.last_occurence
+					else:
+						new_to_date = datetime.date(to_date)
 
-						if appo.series.last_occurence < datetime.date(to_date):
-							new_to_date = appo.series.last_occurence
-						else: 	
-							new_to_date = datetime.date(to_date)
+					if appo.series.reoccurences == 'daily':
+						to_correct = int((new_from_date - appo.start_date.date()).days)
+						if appo.start_date.date() > new_from_date:
+							to_correct = int((appo.start_date.date() - new_from_date).days)
 
-						days_between = int((new_to_date - new_from_date).days)
+						appo.start_date = appo.start_date + timedelta(days=1*to_correct)
+						appo.end_date = appo.end_date + timedelta(days=1*to_correct)
 
-														
-						for i in range(1, days_between+1):
+						days_between = int((new_to_date - new_from_date).days) + 1
+
+						for i in range(0, days_between):
 							new_start_date = appo.start_date + timedelta(days=1*i)
 							new_end_date = appo.end_date + timedelta(days=1*i)
 							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date, series=appo.series, pk=appo.id)
 							
 							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
 			
-					elif appo.series.reoccurences == 'weekly':				
-						if appo.series.first_occurence > datetime.date(from_date):
-							new_from_date = appo.series.first_occurence
-						else:
-							new_from_date = datetime.date(from_date)
+					elif appo.series.reoccurences == 'weekly':
+						to_correct = int(((new_from_date - appo.start_date.date()).days + 1) / 7)
+						if appo.start_date.date() > new_from_date:
+							to_correct = int(((appo.start_date.date() - new_from_date).days + 1) / 7)
+							to_correct = -1 * to_correct
 
-						if appo.series.last_occurence < datetime.date(to_date):
-							new_to_date = appo.series.last_occurence
-						else: 	
-							new_to_date = datetime.date(to_date)		
+						appo.start_date = appo.start_date + timedelta(days=7*to_correct)
+						appo.end_date = appo.end_date + timedelta(days=7*to_correct)
 
-						weeks_between = int((new_to_date - new_from_date).days / 7)
+						weeks_between = int(((new_to_date - new_from_date).days) / 7) + 1
+
+						if new_from_date > (new_to_date - timedelta(days=2)) and new_to_date != appo.start_date.date():
+							weeks_between = weeks_between - 1
 					
-						for i in range(1, weeks_between+1):
+						for i in range(0, weeks_between):
 							new_start_date = appo.start_date + timedelta(days=7*i) 
 							new_end_date = appo.end_date + timedelta(days=7*i)
 							new_app = Appointment(calendar=calendar, title=appo.title, description=appo.description, start_date=new_start_date, end_date=new_end_date, series=appo.series , pk=appo.id)
 
 							all_appointments.append(json.dumps(new_app, cls=DateTimeEncoder))
-							
+						
 					elif appo.series.reoccurences == 'monthly':
-						pass        
-
-
+						pass
 
 		response = {}
 		response['userName'] = request.user.username

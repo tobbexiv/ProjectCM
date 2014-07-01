@@ -577,7 +577,17 @@ var cal = new function Calendar() {
 				success:	function(data) {
 					for(var i = 0; i < data.length; i++) {
 						data[i] = JSON.parse(data[i]);
+						data[i].starttime = new Date(data[i].starttime);
+						data[i].endtime = new Date(data[i].endtime);
 					}
+
+					data.sort(function(a, b) {
+						if(a.starttime.getTime() == b.starttime.getTime()) {
+							return a.endtime.getTime() > b.endtime.getTime()
+						} else {
+							return a.starttime.getTime() > b.starttime.getTime();
+						}
+					})
 
 					callback(data);
 				}
@@ -1229,7 +1239,7 @@ var cal = new function Calendar() {
 						if(j < dates.length) {
 							var len = dates[j].length - 1;
 							
-							if(data[i].starttime >= dates[j][len].endtime) {
+							if(data[i].starttime.getTime() >= dates[j][len].endtime.getTime()) {
 								dates[j].push(data[i]);
 								break;
 							}
@@ -1281,9 +1291,9 @@ var cal = new function Calendar() {
 						
 						notes		= notes != '' ? '<br><span class="notes"' + (notes_l != '' ? (' title="' + notes_l + '"') : '') + '>' + notes + '</span>' : '';
 						
-						var start	= new Date(date.starttime);
+						var start	= date.starttime;
 						var top		= start.getHours() * 60 + start.getMinutes();
-						var height	= (date.endtime - date.starttime) / 60;
+						var height	= (date.endtime.getTime() - date.starttime.getTime()) / 60000;
 						
 						var dateItem = $('<div />', {'class': 'calendar_appointment shadow_outer'}).appendTo(wrapper).html(marker + name + notes);
 						dateItem.css({'top': top + 'px', 'height': height + 'px'});7
@@ -1307,7 +1317,7 @@ var cal = new function Calendar() {
 				}
 				
 				for(var i = 0; i < data.length; i++) {
-					var index = (new Date(data[i].starttime)).getDay();
+					var index = data[i].starttime.getDay();
 					index--;
 					index = index < 0 ? index + 7 : index;
 					dataPerDay[index].push(data[i]);
@@ -1325,20 +1335,15 @@ var cal = new function Calendar() {
 						
 						$(dates[i]).each(function(index, date) {
 							var marker	= '<div class="marker" style="background-color: #' + date.color + ';"></div>';
-							var name	= '<span class="name">' + date.name + '</span>';
 							var notes	= date.notes ? date.notes : '';
-							var notes_l	= '';
+							var hovertext = date.name + (notes != '' ? " - " + notes : '');
+							var name	= '<span class="name" title="' + hovertext + '">' + date.name + '</span>';
 							
-							if(notes.length > 40) {
-								notes_l	= notes;
-								notes	= notes.substr(0, 40) + '...';
-							}
+							notes		= notes != '' ? '<br><span class="notes" title="' + hovertext + '">' + notes + '</span>' : '';
 							
-							notes		= notes != '' ? '<br><span class="notes"' + (notes_l != '' ? (' title="' + notes_l + '"') : '') + '>' + notes + '</span>' : '';
-							
-							var start	= new Date(date.starttime);
+							var start	= date.starttime;
 							var top		= start.getHours() * 60 + start.getMinutes();
-							var height	= (date.endtime - date.starttime) / 60;
+							var height	= (date.endtime.getTime() - date.starttime.getTime()) / 60000;
 							
 							var dateItem = $('<div />', {'class': 'calendar_appointment shadow_outer'}).appendTo(wrapper).html(marker + name + notes);
 							dateItem.css({'top': top + 'px', 'height': height + 'px'});
@@ -1363,7 +1368,7 @@ var cal = new function Calendar() {
 				}
 				
 				for(var i = 0; i < data.length; i++) {
-					var index = (new Date(data[i].starttime)).getDate() - 1;
+					var index = data[i].starttime.getDate() - 1;
 					dataPerDay[index].push(data[i]);
 				}
 				
@@ -1371,8 +1376,8 @@ var cal = new function Calendar() {
 					var box = $('.calendar_month_item:not(.inactive):eq(' + i + ') .calendar_month_item_content');
 					
 					$(dataPerDay[i]).each(function(index, date) {
-						var start	= new Date(date.starttime);
-						var end		= new Date(date.endtime);
+						var start	= date.starttime;
+						var end		= date.endtime;
 						var marker	= '<div class="marker" style="background-color: #' + date.color + ';"></div>';
 						var time	= '<span class="time">' + _this.Helper.getFormattedTime(start, false, true) + ' - ' + _this.Helper.getFormattedTime(end, false, true) + '</span>';
 						var name	= '<br><span class="name">' + date.name + '</span>';
@@ -1398,8 +1403,8 @@ var cal = new function Calendar() {
 				var listNext	= $('<div />', {'id': 'calendar_list_next'}).appendTo(calBox);
 				
 				$(data).each(function(index, date) {
-					var start	= new Date(date.starttime);
-					var end		= new Date(date.endtime);
+					var start	= date.starttime;
+					var end		= date.endtime;
 					
 					var marker		= '<div class="marker" style="background-color: #' + date.color + ';"></div>';
 					var time		= '<span class="time">' + _this.Helper.getFormattedTime(start, true, true) + ' - ' + _this.Helper.getFormattedTime(end, false, true) + '</span>';
@@ -1421,6 +1426,8 @@ var cal = new function Calendar() {
 				
 				if(_type == 'day' || _type == 'week') {
 					$('#calendar_body').animate({scrollTop: 420}, 0);
+				} else {
+					$('#calendar_body').animate({scrollTop: 0}, 0);
 				}
 				
 				switch(_type) {
