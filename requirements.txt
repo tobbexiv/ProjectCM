@@ -1,9 +1,8 @@
-django
+django==1.6
 south
 coveralls
 selenium
 radon
 django-allauth
-django_dajax
 python-dateutil
 gunicorn
