@@ -1,7 +1,7 @@
 from django.db import models
 from django.contrib.auth.models import User
 
-
+#hallo
 
 class MailHost(models.Model):
 	host_name = models.CharField(max_length=60, null=False, blank=False)
